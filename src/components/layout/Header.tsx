@@ -10,28 +10,13 @@ export default function Header() {
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex items-center justify-between h-16">
                     {/* Logo */}
-                    <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-violet-500 to-cyan-500 flex items-center justify-center shadow-lg shadow-violet-500/25">
-                            <svg
-                                className="w-6 h-6 text-white"
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
-                            >
-                                <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth={2}
-                                    d="M7 4v16M17 4v16M3 8h4m10 0h4M3 12h18M3 16h4m10 0h4M4 20h16a1 1 0 001-1V5a1 1 0 00-1-1H4a1 1 0 00-1 1v14a1 1 0 001 1z"
-                                />
-                            </svg>
-                        </div>
-                        <div>
-                            <h1 className="text-lg font-bold bg-gradient-to-r from-violet-400 to-cyan-400 bg-clip-text text-transparent">
-                                Streaming Landscape
-                            </h1>
-                            <p className="text-xs text-zinc-500">Explorer</p>
-                        </div>
+                    <div className="flex items-center">
+                        <h1 className="text-xl font-bold tracking-tight">
+                            <span className="bg-gradient-to-r from-violet-400 via-fuchsia-400 to-cyan-400 bg-clip-text text-transparent">
+                                Streaming
+                            </span>
+                            <span className="text-zinc-300 ml-1.5">Landscape</span>
+                        </h1>
                     </div>
 
                     {/* Stats summary */}

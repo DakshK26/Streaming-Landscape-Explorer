@@ -26,8 +26,11 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-[#0a0a0a] text-[#e5e5e5] min-h-screen`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-[#09090b] text-[#fafafa] min-h-screen`}
       >
+        {/* Animated gradient background */}
+        <div className="gradient-bg" aria-hidden="true" />
+        <div className="grid-pattern" aria-hidden="true" />
         {children}
       </body>
     </html>

@@ -67,16 +67,21 @@ function DashboardContent() {
     }, [summaryData, setSummary]);
 
     return (
-        <div className="min-h-screen bg-[#09090b]">
+        <div className="min-h-screen relative">
             <Header />
 
-            <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+            <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 relative z-10">
                 {/* Hero Section */}
                 <section className="mb-16 text-center">
+                    <div className="inline-block mb-4 px-4 py-1.5 rounded-full bg-violet-500/10 border border-violet-500/20">
+                        <span className="text-sm text-violet-400 font-medium">📊 Netflix Catalog Analysis</span>
+                    </div>
                     <h1 className="text-5xl md:text-6xl font-bold mb-6 tracking-tight">
-                        <span className="gradient-text">Streaming Landscape</span>
+                        <span className="bg-gradient-to-r from-violet-400 via-fuchsia-400 to-cyan-400 bg-clip-text text-transparent">
+                            Streaming Landscape
+                        </span>
                     </h1>
-                    <p className="text-lg text-[#a1a1aa] max-w-2xl mx-auto leading-relaxed">
+                    <p className="text-lg text-zinc-400 max-w-2xl mx-auto leading-relaxed">
                         Explore the evolution of streaming content across time, genres, and regions.
                         Discover trends and insights in the world of entertainment.
                     </p>
@@ -84,21 +89,21 @@ function DashboardContent() {
                     {/* Quick Stats */}
                     {summaryData && (
                         <div className="mt-10 grid grid-cols-2 md:grid-cols-4 gap-4 max-w-3xl mx-auto">
-                            <div className="bg-[#18181b] border border-[#27272a] rounded-xl p-4">
-                                <p className="text-2xl font-bold text-white">{summaryData.totalTitles.toLocaleString()}</p>
-                                <p className="text-sm text-[#71717a]">Total Titles</p>
+                            <div className="group bg-zinc-900/50 backdrop-blur-sm border border-zinc-800/50 rounded-2xl p-5 hover:border-zinc-700/50 transition-all duration-300">
+                                <p className="text-3xl font-bold text-white">{summaryData.totalTitles.toLocaleString()}</p>
+                                <p className="text-sm text-zinc-500 mt-1">Total Titles</p>
                             </div>
-                            <div className="bg-[#18181b] border border-[#27272a] rounded-xl p-4">
-                                <p className="text-2xl font-bold text-[#8b5cf6]">{summaryData.totalMovies.toLocaleString()}</p>
-                                <p className="text-sm text-[#71717a]">Movies</p>
+                            <div className="group bg-zinc-900/50 backdrop-blur-sm border border-zinc-800/50 rounded-2xl p-5 hover:border-violet-500/30 transition-all duration-300">
+                                <p className="text-3xl font-bold text-violet-400">{summaryData.totalMovies.toLocaleString()}</p>
+                                <p className="text-sm text-zinc-500 mt-1">Movies</p>
                             </div>
-                            <div className="bg-[#18181b] border border-[#27272a] rounded-xl p-4">
-                                <p className="text-2xl font-bold text-[#06b6d4]">{summaryData.totalTVShows.toLocaleString()}</p>
-                                <p className="text-sm text-[#71717a]">TV Shows</p>
+                            <div className="group bg-zinc-900/50 backdrop-blur-sm border border-zinc-800/50 rounded-2xl p-5 hover:border-cyan-500/30 transition-all duration-300">
+                                <p className="text-3xl font-bold text-cyan-400">{summaryData.totalTVShows.toLocaleString()}</p>
+                                <p className="text-sm text-zinc-500 mt-1">TV Shows</p>
                             </div>
-                            <div className="bg-[#18181b] border border-[#27272a] rounded-xl p-4">
-                                <p className="text-2xl font-bold text-[#10b981]">{summaryData.totalCountries}</p>
-                                <p className="text-sm text-[#71717a]">Countries</p>
+                            <div className="group bg-zinc-900/50 backdrop-blur-sm border border-zinc-800/50 rounded-2xl p-5 hover:border-emerald-500/30 transition-all duration-300">
+                                <p className="text-3xl font-bold text-emerald-400">{summaryData.totalCountries}</p>
+                                <p className="text-sm text-zinc-500 mt-1">Countries</p>
                             </div>
                         </div>
                     )}
