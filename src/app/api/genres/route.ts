@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 import type { GenreStats } from '@/types';
+import { consolidateGenreStats } from '@/lib/genreConsolidation';
 
 export async function GET(request: Request) {
     try {
@@ -79,7 +80,10 @@ export async function GET(request: Request) {
             .filter((g) => g.count > 0)
             .sort((a, b) => b.count - a.count);
 
-        return NextResponse.json(sortedStats);
+        // Consolidate genres (merge TV/Movie variants)
+        const consolidatedStats = consolidateGenreStats(sortedStats);
+
+        return NextResponse.json(consolidatedStats);
     } catch (error) {
         console.error('Error fetching genres:', error);
         return NextResponse.json(

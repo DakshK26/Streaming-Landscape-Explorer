@@ -6,7 +6,7 @@ import { useEffect, useState } from 'react';
 import Header from '@/components/layout/Header';
 import TimelineChart from '@/components/charts/TimelineChart';
 import GenreBarChart from '@/components/charts/GenreBarChart';
-import GenreScatterChart from '@/components/charts/GenreScatterChart';
+import GenreTrendChart from '@/components/charts/GenreTrendChart';
 import ChoroplethMap from '@/components/charts/ChoroplethMap';
 import InsightCards from '@/components/insights/InsightCards';
 import GenreFilter from '@/components/filters/GenreFilter';
@@ -208,15 +208,15 @@ function DashboardContent() {
                             />
                         </div>
 
-                        {/* Genre Scatter Chart */}
+                        {/* Genre Trend Chart */}
                         <div className="card">
                             <div className="mb-4">
-                                <h3 className="font-medium text-white">Year vs Duration</h3>
+                                <h3 className="font-medium text-white">Genre Trends Over Time</h3>
                                 <p className="text-xs text-[#71717a] mt-1">
-                                    Hover over points for details
+                                    How genres have grown since 2000
                                 </p>
                             </div>
-                            <GenreScatterChart
+                            <GenreTrendChart
                                 data={scatterData || []}
                                 loading={scatterLoading}
                                 selectedGenre={selectedGenre}
