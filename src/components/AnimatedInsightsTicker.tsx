@@ -224,8 +224,8 @@ export default function AnimatedInsightsTicker({
                                 key={idx}
                                 onClick={() => goToInsight(idx)}
                                 className={`w-2 h-2 rounded-full transition-all duration-300 ${idx === currentIndex
-                                        ? `bg-gradient-to-r ${insight.color} scale-125`
-                                        : 'bg-zinc-700 hover:bg-zinc-600'
+                                    ? `bg-gradient-to-r ${insight.color} scale-125`
+                                    : 'bg-zinc-700 hover:bg-zinc-600'
                                     }`}
                                 aria-label={`Go to insight ${idx + 1}`}
                             />
