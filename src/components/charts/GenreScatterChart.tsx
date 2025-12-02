@@ -2,7 +2,6 @@
 
 import { ResponsiveScatterPlot } from '@nivo/scatterplot';
 import type { ScatterDataPoint } from '@/types';
-import { genreColors } from '@/components/filters/GenreFilter';
 
 interface GenreScatterChartProps {
     data: ScatterDataPoint[];
@@ -10,10 +9,19 @@ interface GenreScatterChartProps {
     selectedGenre: string | null;
 }
 
-// Get unique genres and assign colors
-function getGenreColor(genre: string): string {
-    return genreColors[genre] || '#6366f1';
-}
+// Vibrant, distinct color palette for scatter plot
+const scatterColors = [
+    '#8b5cf6', // purple
+    '#06b6d4', // cyan
+    '#10b981', // emerald
+    '#f59e0b', // amber
+    '#ef4444', // red
+    '#ec4899', // pink
+    '#6366f1', // indigo
+    '#14b8a6', // teal
+    '#f97316', // orange
+    '#84cc16', // lime
+];
 
 export default function GenreScatterChart({
     data,
@@ -23,7 +31,10 @@ export default function GenreScatterChart({
     if (loading) {
         return (
             <div className="h-[400px] flex items-center justify-center">
-                <div className="animate-pulse text-[#a3a3a3]">Loading scatter data...</div>
+                <div className="flex flex-col items-center gap-3">
+                    <div className="w-10 h-10 border-3 border-[#8b5cf6] border-t-transparent rounded-full animate-spin" />
+                    <p className="text-[#71717a] text-sm">Loading scatter data...</p>
+                </div>
             </div>
         );
     }
@@ -31,7 +42,7 @@ export default function GenreScatterChart({
     if (!data || data.length === 0) {
         return (
             <div className="h-[400px] flex items-center justify-center">
-                <div className="text-[#a3a3a3]">No data available for scatter plot</div>
+                <div className="text-[#71717a]">No data available</div>
             </div>
         );
     }
@@ -41,10 +52,7 @@ export default function GenreScatterChart({
         ? data.filter((d) => d.genre === selectedGenre)
         : data;
 
-    // Group data by genre for coloring
-    const genres = [...new Set(filteredData.map((d) => d.genre))];
-
-    // Limit genres to avoid clutter (top 10 by count)
+    // Count genres and get top ones
     const genreCounts = new Map<string, number>();
     filteredData.forEach((d) => {
         genreCounts.set(d.genre, (genreCounts.get(d.genre) || 0) + 1);
@@ -52,16 +60,15 @@ export default function GenreScatterChart({
 
     const topGenres = [...genreCounts.entries()]
         .sort((a, b) => b[1] - a[1])
-        .slice(0, selectedGenre ? 1 : 10)
+        .slice(0, selectedGenre ? 1 : 8)
         .map(([genre]) => genre);
 
     // Transform data for Nivo scatter plot
-    // X-axis: release year, Y-axis: duration (for movies) or number of seasons (for TV shows)
-    const chartData = topGenres.map((genre) => ({
+    const chartData = topGenres.map((genre, index) => ({
         id: genre,
         data: filteredData
             .filter((d) => d.genre === genre && d.duration !== null)
-            .slice(0, 200) // Limit points per genre for performance
+            .slice(0, 150)
             .map((d) => ({
                 x: d.releaseYear,
                 y: d.duration as number,
@@ -69,37 +76,35 @@ export default function GenreScatterChart({
                 type: d.type,
                 country: d.country,
             })),
+        color: scatterColors[index % scatterColors.length],
     }));
 
-    // Filter out empty series
     const validChartData = chartData.filter((series) => series.data.length > 0);
 
     if (validChartData.length === 0) {
         return (
             <div className="h-[400px] flex items-center justify-center">
-                <div className="text-[#a3a3a3]">No data with duration information available</div>
+                <div className="text-[#71717a]">No data with duration information</div>
             </div>
         );
     }
 
-    // Determine if we're showing movies or tv shows primarily
     const movieCount = filteredData.filter((d) => d.type === 'Movie').length;
     const tvCount = filteredData.filter((d) => d.type === 'TV Show').length;
-    const yAxisLabel = movieCount > tvCount ? 'Duration (minutes)' : 'Number of Seasons';
+    const yAxisLabel = movieCount > tvCount ? 'Duration (min)' : 'Seasons';
 
     return (
         <div className="h-[400px]">
             <ResponsiveScatterPlot
                 data={validChartData}
-                margin={{ top: 20, right: 140, bottom: 60, left: 70 }}
+                margin={{ top: 20, right: 20, bottom: 60, left: 70 }}
                 xScale={{ type: 'linear', min: 'auto', max: 'auto' }}
                 yScale={{ type: 'linear', min: 0, max: 'auto' }}
-                blendMode="multiply"
                 axisTop={null}
                 axisRight={null}
                 axisBottom={{
-                    tickSize: 5,
-                    tickPadding: 5,
+                    tickSize: 0,
+                    tickPadding: 12,
                     tickRotation: 0,
                     legend: 'Release Year',
                     legendPosition: 'middle',
@@ -107,15 +112,18 @@ export default function GenreScatterChart({
                     format: (value) => String(Math.round(Number(value))),
                 }}
                 axisLeft={{
-                    tickSize: 5,
-                    tickPadding: 5,
+                    tickSize: 0,
+                    tickPadding: 12,
                     tickRotation: 0,
                     legend: yAxisLabel,
                     legendPosition: 'middle',
                     legendOffset: -55,
                 }}
-                colors={(node) => getGenreColor(node.serieId as string)}
-                nodeSize={8}
+                colors={(node) => {
+                    const series = validChartData.find(s => s.id === node.serieId);
+                    return series?.color || '#8b5cf6';
+                }}
+                nodeSize={10}
                 useMesh={true}
                 tooltip={({ node }) => {
                     const pointData = node.data as {
@@ -126,89 +134,61 @@ export default function GenreScatterChart({
                         country: string;
                     };
                     return (
-                        <div
-                            style={{
-                                background: '#1a1a1a',
-                                padding: '12px 16px',
-                                border: '1px solid #2a2a2a',
-                                borderRadius: '8px',
-                                boxShadow: '0 4px 20px rgba(0, 0, 0, 0.5)',
-                                maxWidth: '300px',
-                            }}
-                        >
-                            <strong style={{ color: '#e5e5e5' }}>{pointData.title}</strong>
-                            <div style={{ marginTop: '8px', fontSize: '12px', color: '#a3a3a3' }}>
-                                <div>
-                                    <span style={{ color: node.color }}>●</span> {node.serieId}
+                        <div className="bg-[#18181b] border border-[#27272a] rounded-xl px-4 py-3 shadow-2xl max-w-xs">
+                            <p className="font-semibold text-white text-sm mb-2 line-clamp-2">
+                                {pointData.title}
+                            </p>
+                            <div className="space-y-1 text-xs">
+                                <div className="flex items-center gap-2">
+                                    <span 
+                                        className="w-2.5 h-2.5 rounded-full" 
+                                        style={{ backgroundColor: node.color }}
+                                    />
+                                    <span className="text-[#a1a1aa]">{node.serieId}</span>
                                 </div>
-                                <div>Year: {pointData.x}</div>
-                                <div>
-                                    {pointData.type === 'Movie' ? 'Duration' : 'Seasons'}: {pointData.y}
-                                    {pointData.type === 'Movie' ? ' min' : ''}
-                                </div>
-                                <div>Country: {pointData.country}</div>
-                                <div>Type: {pointData.type}</div>
+                                <p className="text-[#71717a]">
+                                    {pointData.x} · {pointData.y}{pointData.type === 'Movie' ? ' min' : ' seasons'}
+                                </p>
+                                <p className="text-[#71717a]">{pointData.country}</p>
                             </div>
                         </div>
                     );
                 }}
-                legends={[
-                    {
-                        anchor: 'bottom-right',
-                        direction: 'column',
-                        justify: false,
-                        translateX: 130,
-                        translateY: 0,
-                        itemWidth: 100,
-                        itemHeight: 16,
-                        itemsSpacing: 4,
-                        itemDirection: 'left-to-right',
-                        symbolSize: 10,
-                        symbolShape: 'circle',
-                        itemTextColor: '#a3a3a3',
-                        effects: [
-                            {
-                                on: 'hover',
-                                style: {
-                                    itemTextColor: '#e5e5e5',
-                                },
-                            },
-                        ],
-                    },
-                ]}
                 theme={{
                     background: 'transparent',
                     text: {
                         fontSize: 11,
-                        fill: '#a3a3a3',
+                        fill: '#a1a1aa',
                     },
                     axis: {
                         domain: {
                             line: {
-                                stroke: '#2a2a2a',
+                                stroke: '#27272a',
                                 strokeWidth: 1,
                             },
                         },
                         ticks: {
                             line: {
-                                stroke: '#2a2a2a',
-                                strokeWidth: 1,
+                                stroke: 'transparent',
                             },
                             text: {
-                                fill: '#a3a3a3',
+                                fill: '#71717a',
+                                fontSize: 11,
                             },
                         },
                         legend: {
                             text: {
-                                fill: '#e5e5e5',
+                                fill: '#a1a1aa',
                                 fontSize: 12,
+                                fontWeight: 500,
                             },
                         },
                     },
                     grid: {
                         line: {
-                            stroke: '#1a1a1a',
+                            stroke: '#27272a',
                             strokeWidth: 1,
+                            strokeDasharray: '4 4',
                         },
                     },
                 }}

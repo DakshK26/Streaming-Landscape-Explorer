@@ -7,11 +7,100 @@ import {
     Geography,
     ZoomableGroup,
 } from 'react-simple-maps';
-import { scaleQuantize } from 'd3-scale';
+import { scaleLog } from 'd3-scale';
 import { CountryData } from '@/types';
 
-// Using Natural Earth 110m world topology
 const geoUrl = 'https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json';
+
+// Map our ISO codes to the topology's numeric IDs or names
+const isoToName: Record<string, string[]> = {
+    'USA': ['United States of America', 'United States'],
+    'GBR': ['United Kingdom'],
+    'IND': ['India'],
+    'CAN': ['Canada'],
+    'FRA': ['France'],
+    'JPN': ['Japan'],
+    'ESP': ['Spain'],
+    'KOR': ['South Korea', 'Korea, Republic of'],
+    'MEX': ['Mexico'],
+    'AUS': ['Australia'],
+    'DEU': ['Germany'],
+    'CHN': ['China'],
+    'BRA': ['Brazil'],
+    'ITA': ['Italy'],
+    'TUR': ['Turkey'],
+    'HKG': ['Hong Kong'],
+    'EGY': ['Egypt'],
+    'THA': ['Thailand'],
+    'TWN': ['Taiwan'],
+    'NGA': ['Nigeria'],
+    'ARG': ['Argentina'],
+    'IDN': ['Indonesia'],
+    'PHL': ['Philippines'],
+    'BEL': ['Belgium'],
+    'NOR': ['Norway'],
+    'POL': ['Poland'],
+    'DNK': ['Denmark'],
+    'SWE': ['Sweden'],
+    'NLD': ['Netherlands'],
+    'CHE': ['Switzerland'],
+    'IRL': ['Ireland'],
+    'NZL': ['New Zealand'],
+    'ZAF': ['South Africa'],
+    'RUS': ['Russia', 'Russian Federation'],
+    'SGP': ['Singapore'],
+    'MYS': ['Malaysia'],
+    'ISR': ['Israel'],
+    'PAK': ['Pakistan'],
+    'COL': ['Colombia'],
+    'CHL': ['Chile'],
+    'PER': ['Peru'],
+    'ARE': ['United Arab Emirates'],
+    'SAU': ['Saudi Arabia'],
+    'PRT': ['Portugal'],
+    'GRC': ['Greece'],
+    'CZE': ['Czech Republic', 'Czechia'],
+    'AUT': ['Austria'],
+    'ROU': ['Romania'],
+    'HUN': ['Hungary'],
+    'FIN': ['Finland'],
+    'VNM': ['Vietnam', 'Viet Nam'],
+    'UKR': ['Ukraine'],
+    'KEN': ['Kenya'],
+    'GHA': ['Ghana'],
+    'MAR': ['Morocco'],
+    'LBN': ['Lebanon'],
+    'JOR': ['Jordan'],
+    'KWT': ['Kuwait'],
+    'QAT': ['Qatar'],
+    'BGD': ['Bangladesh'],
+    'LKA': ['Sri Lanka'],
+    'NPL': ['Nepal'],
+    'ISL': ['Iceland'],
+    'LUX': ['Luxembourg'],
+    'MLT': ['Malta'],
+    'CYP': ['Cyprus'],
+    'HRV': ['Croatia'],
+    'SRB': ['Serbia'],
+    'BGR': ['Bulgaria'],
+    'SVK': ['Slovakia'],
+    'SVN': ['Slovenia'],
+    'EST': ['Estonia'],
+    'LVA': ['Latvia'],
+    'LTU': ['Lithuania'],
+    'URY': ['Uruguay'],
+    'VEN': ['Venezuela'],
+    'ECU': ['Ecuador'],
+    'BOL': ['Bolivia'],
+    'PRY': ['Paraguay'],
+    'CUB': ['Cuba'],
+    'JAM': ['Jamaica'],
+    'PRI': ['Puerto Rico'],
+    'DOM': ['Dominican Republic'],
+    'GTM': ['Guatemala'],
+    'PAN': ['Panama'],
+    'CRI': ['Costa Rica'],
+};
 
 interface ChoroplethMapProps {
     data: CountryData[];
@@ -27,6 +116,8 @@ interface TooltipState {
     content: {
         name: string;
         count: number;
+        movies: number;
+        tvShows: number;
     } | null;
 }
 
@@ -43,52 +134,55 @@ function ChoroplethMap({
         content: null,
     });
 
-    // Create lookup map from ISO code to data
-    const dataByIso = useMemo(() => {
+    // Create lookup map from country name to data
+    const dataByName = useMemo(() => {
         const map = new Map<string, CountryData>();
         data.forEach((item) => {
-            if (item.iso) {
-                map.set(item.iso, item);
+            // Add by country name
+            map.set(item.country.toLowerCase(), item);
+            // Also add by ISO code variants
+            if (item.iso && isoToName[item.iso]) {
+                isoToName[item.iso].forEach(name => {
+                    map.set(name.toLowerCase(), item);
+                });
             }
         });
         return map;
     }, [data]);
 
-    // Calculate max value for color scale
+    // Calculate max value for color scale (use log scale for better distribution)
     const maxCount = useMemo(() => {
         if (data.length === 0) return 100;
         return Math.max(...data.map((d) => d.count));
     }, [data]);
 
-    // Netflix-inspired color scale (dark to bright red)
+    // Purple-cyan gradient color scale using log scale for better distribution
     const colorScale = useMemo(() => {
-        return scaleQuantize<string>()
-            .domain([0, maxCount])
-            .range([
-                '#2a0f0f', // darkest
-                '#4a1a1a',
-                '#6b2525',
-                '#8c3030',
-                '#ad3b3b',
-                '#ce4646',
-                '#e50914', // Netflix red
-                '#ff4444', // brightest
-            ]);
+        return scaleLog<string>()
+            .domain([1, maxCount])
+            .range(['#1e1b4b', '#06b6d4'])
+            .clamp(true);
     }, [maxCount]);
+
+    const findCountryData = (geoName: string): CountryData | undefined => {
+        const normalized = geoName.toLowerCase();
+        return dataByName.get(normalized);
+    };
 
     const handleMouseEnter = (
         event: React.MouseEvent,
-        geo: { properties: { name: string } },
+        geoName: string,
         countryData: CountryData | undefined
     ) => {
-        const { clientX, clientY } = event;
         setTooltip({
             show: true,
-            x: clientX,
-            y: clientY,
+            x: event.clientX,
+            y: event.clientY,
             content: {
-                name: geo.properties.name,
+                name: geoName,
                 count: countryData?.count || 0,
+                movies: countryData?.movieCount || 0,
+                tvShows: countryData?.tvShowCount || 0,
             },
         });
     };
@@ -111,45 +205,40 @@ function ChoroplethMap({
         return (
             <div className="h-[500px] flex items-center justify-center">
                 <div className="flex flex-col items-center gap-4">
-                    <div className="w-12 h-12 border-4 border-[#e50914] border-t-transparent rounded-full animate-spin" />
-                    <p className="text-[#a3a3a3]">Loading map data...</p>
+                    <div className="w-12 h-12 border-4 border-[#8b5cf6] border-t-transparent rounded-full animate-spin" />
+                    <p className="text-[#a1a1aa]">Loading map data...</p>
                 </div>
             </div>
         );
     }
 
     return (
-        <div className="relative h-[500px]" onMouseMove={handleMouseMove}>
+        <div className="relative h-[500px] rounded-xl overflow-hidden bg-[#0c0c0f]" onMouseMove={handleMouseMove}>
             <ComposableMap
                 projection="geoMercator"
                 projectionConfig={{
-                    scale: 120,
-                    center: [0, 30],
+                    scale: 140,
+                    center: [10, 20],
                 }}
                 style={{
                     width: '100%',
                     height: '100%',
                 }}
             >
-                <ZoomableGroup zoom={1} minZoom={1} maxZoom={6}>
+                <ZoomableGroup zoom={1} minZoom={1} maxZoom={8}>
                     <Geographies geography={geoUrl}>
                         {({ geographies }) =>
                             geographies.map((geo) => {
-                                // Try to find country data by ISO code
-                                const isoA3 = geo.properties.ISO_A3 || geo.id;
-                                const isoA2 = geo.properties.ISO_A2;
-                                const countryData = dataByIso.get(isoA3) || dataByIso.get(isoA2);
+                                const geoName = geo.properties.name || '';
+                                const countryData = findCountryData(geoName);
                                 const count = countryData?.count || 0;
-                                const isSelected =
-                                    selectedCountry &&
-                                    (countryData?.country === selectedCountry ||
-                                        countryData?.iso === selectedCountry);
+                                const isSelected = selectedCountry === countryData?.country;
 
                                 return (
                                     <Geography
                                         key={geo.rsmKey}
                                         geography={geo}
-                                        onMouseEnter={(e) => handleMouseEnter(e, geo, countryData)}
+                                        onMouseEnter={(e) => handleMouseEnter(e, geoName, countryData)}
                                         onMouseLeave={handleMouseLeave}
                                         onClick={() => {
                                             if (onCountryClick && countryData) {
@@ -158,23 +247,23 @@ function ChoroplethMap({
                                         }}
                                         style={{
                                             default: {
-                                                fill: count > 0 ? colorScale(count) : '#1a1a1a',
-                                                stroke: isSelected ? '#ffffff' : '#333333',
-                                                strokeWidth: isSelected ? 2 : 0.5,
+                                                fill: count > 0 ? colorScale(count) : '#18181b',
+                                                stroke: isSelected ? '#8b5cf6' : '#27272a',
+                                                strokeWidth: isSelected ? 1.5 : 0.3,
                                                 outline: 'none',
                                                 cursor: countryData ? 'pointer' : 'default',
                                             },
                                             hover: {
-                                                fill: count > 0 ? '#ff6666' : '#2a2a2a',
-                                                stroke: '#ffffff',
+                                                fill: count > 0 ? '#8b5cf6' : '#27272a',
+                                                stroke: '#a78bfa',
                                                 strokeWidth: 1,
                                                 outline: 'none',
                                                 cursor: countryData ? 'pointer' : 'default',
                                             },
                                             pressed: {
-                                                fill: '#e50914',
-                                                stroke: '#ffffff',
-                                                strokeWidth: 2,
+                                                fill: '#7c3aed',
+                                                stroke: '#a78bfa',
+                                                strokeWidth: 1.5,
                                                 outline: 'none',
                                             },
                                         }}
@@ -189,45 +278,49 @@ function ChoroplethMap({
             {/* Tooltip */}
             {tooltip.show && tooltip.content && (
                 <div
-                    className="fixed z-50 px-3 py-2 bg-[#1a1a1a] border border-[#333] rounded-lg shadow-xl pointer-events-none"
+                    className="fixed z-50 px-4 py-3 bg-[#18181b] border border-[#27272a] rounded-xl shadow-2xl pointer-events-none"
                     style={{
-                        left: tooltip.x + 10,
-                        top: tooltip.y - 40,
+                        left: tooltip.x + 15,
+                        top: tooltip.y - 50,
                     }}
                 >
-                    <p className="font-semibold text-[#e5e5e5]">{tooltip.content.name}</p>
-                    <p className="text-sm text-[#a3a3a3]">
-                        {tooltip.content.count > 0
-                            ? `${tooltip.content.count.toLocaleString()} titles`
-                            : 'No data'}
-                    </p>
+                    <p className="font-semibold text-white mb-1">{tooltip.content.name}</p>
+                    {tooltip.content.count > 0 ? (
+                        <div className="text-sm space-y-0.5">
+                            <p className="text-[#a1a1aa]">
+                                <span className="text-[#8b5cf6] font-medium">{tooltip.content.count.toLocaleString()}</span> titles
+                            </p>
+                            <p className="text-[#71717a]">
+                                {tooltip.content.movies} movies · {tooltip.content.tvShows} TV shows
+                            </p>
+                        </div>
+                    ) : (
+                        <p className="text-sm text-[#71717a]">No data</p>
+                    )}
                 </div>
             )}
 
             {/* Legend */}
-            <div className="absolute bottom-4 left-4 bg-[#1a1a1a]/90 border border-[#333] rounded-lg p-4">
-                <p className="text-sm font-semibold text-[#e5e5e5] mb-2">Titles by Country</p>
+            <div className="absolute bottom-4 left-4 bg-[#18181b]/95 border border-[#27272a] rounded-xl p-4 backdrop-blur-sm">
+                <p className="text-xs font-medium text-[#a1a1aa] mb-2">Content Volume</p>
                 <div className="flex items-center gap-1">
-                    <span className="text-xs text-[#a3a3a3]">0</span>
-                    <div className="flex">
-                        {['#2a0f0f', '#4a1a1a', '#6b2525', '#8c3030', '#ad3b3b', '#ce4646', '#e50914', '#ff4444'].map(
-                            (color, i) => (
-                                <div
-                                    key={i}
-                                    className="w-5 h-4"
-                                    style={{ backgroundColor: color }}
-                                />
-                            )
-                        )}
+                    <span className="text-[10px] text-[#71717a]">1</span>
+                    <div className="flex h-2 rounded-full overflow-hidden">
+                        <div className="w-6" style={{ background: '#1e1b4b' }} />
+                        <div className="w-6" style={{ background: '#312e81' }} />
+                        <div className="w-6" style={{ background: '#4338ca' }} />
+                        <div className="w-6" style={{ background: '#6366f1' }} />
+                        <div className="w-6" style={{ background: '#8b5cf6' }} />
+                        <div className="w-6" style={{ background: '#06b6d4' }} />
                     </div>
-                    <span className="text-xs text-[#a3a3a3]">{maxCount.toLocaleString()}</span>
+                    <span className="text-[10px] text-[#71717a]">{maxCount.toLocaleString()}</span>
                 </div>
             </div>
 
-            {/* Instructions */}
-            <div className="absolute top-4 right-4 bg-[#1a1a1a]/90 border border-[#333] rounded-lg px-3 py-2">
-                <p className="text-xs text-[#a3a3a3]">
-                    🔍 Scroll to zoom • Drag to pan • Click to filter
+            {/* Controls hint */}
+            <div className="absolute top-4 right-4 bg-[#18181b]/95 border border-[#27272a] rounded-lg px-3 py-2 backdrop-blur-sm">
+                <p className="text-[10px] text-[#71717a]">
+                    Scroll to zoom · Drag to pan
                 </p>
             </div>
         </div>

@@ -7,16 +7,16 @@ export default function CountryModeToggle() {
 
     return (
         <div className="space-y-3">
-            <h3 className="text-sm font-medium text-[#a3a3a3]">Country Mode</h3>
-            <div className="flex rounded-lg overflow-hidden border border-[#2a2a2a]">
+            <h3 className="text-sm font-medium text-zinc-400">Country Mode</h3>
+            <div className="flex rounded-xl overflow-hidden border border-zinc-700/50">
                 <button
                     onClick={() => updateFilter('countryMode', 'all')}
                     className={`
-            flex-1 py-2 px-3 text-sm font-medium
-            transition-all duration-200
+            flex-1 py-2.5 px-3 text-sm font-medium
+            transition-all duration-300
             ${filters.countryMode === 'all'
-                            ? 'bg-[#e50914] text-white'
-                            : 'bg-[#1a1a1a] text-[#a3a3a3] hover:bg-[#2a2a2a]'
+                            ? 'bg-gradient-to-r from-violet-600 to-cyan-600 text-white shadow-inner'
+                            : 'bg-zinc-900/50 text-zinc-400 hover:bg-zinc-800/70'
                         }
           `}
                 >
@@ -25,18 +25,18 @@ export default function CountryModeToggle() {
                 <button
                     onClick={() => updateFilter('countryMode', 'primary')}
                     className={`
-            flex-1 py-2 px-3 text-sm font-medium
-            transition-all duration-200
+            flex-1 py-2.5 px-3 text-sm font-medium
+            transition-all duration-300
             ${filters.countryMode === 'primary'
-                            ? 'bg-[#e50914] text-white'
-                            : 'bg-[#1a1a1a] text-[#a3a3a3] hover:bg-[#2a2a2a]'
+                            ? 'bg-gradient-to-r from-violet-600 to-cyan-600 text-white shadow-inner'
+                            : 'bg-zinc-900/50 text-zinc-400 hover:bg-zinc-800/70'
                         }
           `}
                 >
                     Primary Only
                 </button>
             </div>
-            <p className="text-xs text-[#666]">
+            <p className="text-xs text-zinc-500">
                 {filters.countryMode === 'all'
                     ? 'Count all countries for co-productions'
                     : 'Only count the primary producing country'}

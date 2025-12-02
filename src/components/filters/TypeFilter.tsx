@@ -16,16 +16,16 @@ export default function TypeFilter() {
 
     return (
         <div className="space-y-3">
-            <h3 className="text-sm font-medium text-[#a3a3a3]">Content Type</h3>
+            <h3 className="text-sm font-medium text-zinc-400">Content Type</h3>
             <div className="flex gap-2">
                 <button
                     onClick={() => toggleType('Movie')}
                     className={`
-            flex-1 py-2 px-4 rounded-lg text-sm font-medium
-            transition-all duration-200
+            flex-1 py-2.5 px-4 rounded-xl text-sm font-medium
+            transition-all duration-300 border
             ${filters.types.includes('Movie')
-                            ? 'bg-[#e50914] text-white'
-                            : 'bg-[#1a1a1a] text-[#a3a3a3] hover:bg-[#2a2a2a]'
+                            ? 'bg-gradient-to-r from-violet-600 to-violet-500 text-white border-violet-500/50 shadow-lg shadow-violet-500/25'
+                            : 'bg-zinc-900/50 text-zinc-400 hover:bg-zinc-800/70 border-zinc-700/50 hover:border-zinc-600/50'
                         }
           `}
                 >
@@ -39,11 +39,11 @@ export default function TypeFilter() {
                 <button
                     onClick={() => toggleType('TV Show')}
                     className={`
-            flex-1 py-2 px-4 rounded-lg text-sm font-medium
-            transition-all duration-200
+            flex-1 py-2.5 px-4 rounded-xl text-sm font-medium
+            transition-all duration-300 border
             ${filters.types.includes('TV Show')
-                            ? 'bg-[#0ea5e9] text-white'
-                            : 'bg-[#1a1a1a] text-[#a3a3a3] hover:bg-[#2a2a2a]'
+                            ? 'bg-gradient-to-r from-cyan-600 to-cyan-500 text-white border-cyan-500/50 shadow-lg shadow-cyan-500/25'
+                            : 'bg-zinc-900/50 text-zinc-400 hover:bg-zinc-800/70 border-zinc-700/50 hover:border-zinc-600/50'
                         }
           `}
                 >

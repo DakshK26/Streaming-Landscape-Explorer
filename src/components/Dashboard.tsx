@@ -16,7 +16,7 @@ import CountryModeToggle from '@/components/filters/CountryModeToggle';
 import type { SummaryData, TimelineDataPoint, GenreStats, ScatterDataPoint, Insight, CountryData } from '@/types';
 
 function DashboardContent() {
-    const { setSummary, summary, buildQueryString, filters, updateFilter } = useFilters();
+    const { setSummary, buildQueryString, filters } = useFilters();
     const [selectedGenre, setSelectedGenre] = useState<string | null>(null);
     const [selectedCountry, setSelectedCountry] = useState<string | null>(null);
 
@@ -51,20 +51,12 @@ function DashboardContent() {
 
     // Handle genre click from bar chart
     const handleGenreClick = (genre: string) => {
-        if (selectedGenre === genre) {
-            setSelectedGenre(null);
-        } else {
-            setSelectedGenre(genre);
-        }
+        setSelectedGenre(selectedGenre === genre ? null : genre);
     };
 
     // Handle country click from choropleth map
     const handleCountryClick = (country: CountryData | null) => {
-        if (country === null) {
-            setSelectedCountry(null);
-        } else {
-            setSelectedCountry(country.country);
-        }
+        setSelectedCountry(country?.country || null);
     };
 
     // Update summary in context when loaded
@@ -74,37 +66,59 @@ function DashboardContent() {
         }
     }, [summaryData, setSummary]);
 
-    // Update year range when summary loads
-    useEffect(() => {
-        if (summaryData && filters.yearRange[0] === 1900) {
-            // Set initial year range from data
-        }
-    }, [summaryData, filters.yearRange]);
-
     return (
-        <div className="min-h-screen bg-[#0a0a0a]">
+        <div className="min-h-screen bg-[#09090b]">
             <Header />
 
-            <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
                 {/* Hero Section */}
-                <section className="mb-12">
-                    <h1 className="text-4xl md:text-5xl font-bold mb-4">
-                        <span className="gradient-text">Explore the Streaming Landscape</span>
+                <section className="mb-16 text-center">
+                    <h1 className="text-5xl md:text-6xl font-bold mb-6 tracking-tight">
+                        <span className="gradient-text">Streaming Landscape</span>
                     </h1>
-                    <p className="text-lg text-[#a3a3a3] max-w-3xl">
-                        This dashboard explores the streaming catalog across time, genres, and regions.
-                        Use the filters and charts to discover content trends and uncover insights
-                        about how entertainment has evolved.
+                    <p className="text-lg text-[#a1a1aa] max-w-2xl mx-auto leading-relaxed">
+                        Explore the evolution of streaming content across time, genres, and regions.
+                        Discover trends and insights in the world of entertainment.
                     </p>
+                    
+                    {/* Quick Stats */}
+                    {summaryData && (
+                        <div className="mt-10 grid grid-cols-2 md:grid-cols-4 gap-4 max-w-3xl mx-auto">
+                            <div className="bg-[#18181b] border border-[#27272a] rounded-xl p-4">
+                                <p className="text-2xl font-bold text-white">{summaryData.totalTitles.toLocaleString()}</p>
+                                <p className="text-sm text-[#71717a]">Total Titles</p>
+                            </div>
+                            <div className="bg-[#18181b] border border-[#27272a] rounded-xl p-4">
+                                <p className="text-2xl font-bold text-[#8b5cf6]">{summaryData.totalMovies.toLocaleString()}</p>
+                                <p className="text-sm text-[#71717a]">Movies</p>
+                            </div>
+                            <div className="bg-[#18181b] border border-[#27272a] rounded-xl p-4">
+                                <p className="text-2xl font-bold text-[#06b6d4]">{summaryData.totalTVShows.toLocaleString()}</p>
+                                <p className="text-sm text-[#71717a]">TV Shows</p>
+                            </div>
+                            <div className="bg-[#18181b] border border-[#27272a] rounded-xl p-4">
+                                <p className="text-2xl font-bold text-[#10b981]">{summaryData.totalCountries}</p>
+                                <p className="text-sm text-[#71717a]">Countries</p>
+                            </div>
+                        </div>
+                    )}
                 </section>
 
                 {/* Filters Section */}
-                <section className="mb-8 card">
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <section className="mb-12 card">
+                    <div className="flex items-center justify-between mb-6">
+                        <h2 className="text-lg font-semibold text-white">Filters</h2>
+                        {(filters.genres.length > 0 || filters.types.length > 0) && (
+                            <span className="text-xs text-[#8b5cf6] bg-[#8b5cf6]/10 px-2 py-1 rounded-full">
+                                Active filters
+                            </span>
+                        )}
+                    </div>
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                         <div className="lg:col-span-2">
-                            <GenreFilter genres={genreData || []} loading={genreLoading} maxVisible={10} />
+                            <GenreFilter genres={genreData || []} loading={genreLoading} maxVisible={8} />
                         </div>
-                        <div className="space-y-6">
+                        <div className="space-y-8">
                             <TypeFilter />
                             {summaryData && (
                                 <YearRangeSlider
@@ -112,24 +126,33 @@ function DashboardContent() {
                                     maxYear={summaryData.yearRange[1]}
                                 />
                             )}
+                            <CountryModeToggle />
                         </div>
-                    </div>
-                    <div className="mt-6 pt-6 border-t border-[#2a2a2a]">
-                        <CountryModeToggle />
                     </div>
                 </section>
 
                 {/* View 1: Global Content Timeline */}
                 <section className="mb-12">
                     <div className="card">
-                        <div className="mb-6">
-                            <h2 className="text-2xl font-bold text-[#e5e5e5] mb-2">
-                                Global Content Timeline
-                            </h2>
-                            <p className="text-[#a3a3a3]">
-                                Track how the catalog has evolved over time. See the growth of movies and
-                                TV shows by year.
-                            </p>
+                        <div className="flex items-start justify-between mb-6">
+                            <div>
+                                <h2 className="text-xl font-semibold text-white mb-1">
+                                    Content Timeline
+                                </h2>
+                                <p className="text-sm text-[#71717a]">
+                                    Track catalog growth over time
+                                </p>
+                            </div>
+                            <div className="flex items-center gap-4 text-xs">
+                                <span className="flex items-center gap-1.5">
+                                    <span className="w-2.5 h-2.5 rounded-full bg-[#8b5cf6]" />
+                                    <span className="text-[#a1a1aa]">Movies</span>
+                                </span>
+                                <span className="flex items-center gap-1.5">
+                                    <span className="w-2.5 h-2.5 rounded-full bg-[#06b6d4]" />
+                                    <span className="text-[#a1a1aa]">TV Shows</span>
+                                </span>
+                            </div>
                         </div>
                         <TimelineChart
                             data={timelineData || []}
@@ -141,11 +164,9 @@ function DashboardContent() {
                 {/* Dynamic Insights */}
                 <section className="mb-12">
                     <div className="mb-6">
-                        <h2 className="text-2xl font-bold text-[#e5e5e5] mb-2">
-                            Key Insights
-                        </h2>
-                        <p className="text-[#a3a3a3]">
-                            Dynamic insights based on your current filter selection.
+                        <h2 className="text-xl font-semibold text-white mb-1">Key Insights</h2>
+                        <p className="text-sm text-[#71717a]">
+                            Dynamic analysis based on current filters
                         </p>
                     </div>
                     <InsightCards insights={insightsData || []} loading={insightsLoading} />
@@ -154,25 +175,30 @@ function DashboardContent() {
                 {/* View 2: Genre & Quality Explorer */}
                 <section className="mb-12">
                     <div className="mb-6">
-                        <h2 className="text-2xl font-bold text-[#e5e5e5] mb-2">
-                            Genre & Quality Explorer
+                        <h2 className="text-xl font-semibold text-white mb-1">
+                            Genre Explorer
                         </h2>
-                        <p className="text-[#a3a3a3]">
-                            Explore the distribution of content across genres. Click on a genre bar to
-                            filter the scatter plot and see how titles vary by year and duration.
+                        <p className="text-sm text-[#71717a]">
+                            Click a genre bar to filter the scatter plot
                         </p>
                     </div>
 
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                         {/* Genre Bar Chart */}
                         <div className="card">
-                            <div className="mb-4">
-                                <h3 className="text-lg font-semibold text-[#e5e5e5]">
-                                    Genre Distribution
-                                </h3>
-                                <p className="text-sm text-[#a3a3a3]">
-                                    Click a bar to filter the scatter plot
-                                </p>
+                            <div className="flex items-center justify-between mb-4">
+                                <h3 className="font-medium text-white">Genre Distribution</h3>
+                                {selectedGenre && (
+                                    <button
+                                        onClick={() => setSelectedGenre(null)}
+                                        className="text-xs text-[#8b5cf6] hover:text-[#a78bfa] flex items-center gap-1"
+                                    >
+                                        <span className="bg-[#8b5cf6]/20 px-2 py-0.5 rounded">
+                                            {selectedGenre}
+                                        </span>
+                                        <span>×</span>
+                                    </button>
+                                )}
                             </div>
                             <GenreBarChart
                                 data={genreData || []}
@@ -180,30 +206,14 @@ function DashboardContent() {
                                 selectedGenre={selectedGenre}
                                 onGenreClick={handleGenreClick}
                             />
-                            {selectedGenre && (
-                                <div className="mt-4 flex items-center gap-2">
-                                    <span className="text-sm text-[#a3a3a3]">Filtering by:</span>
-                                    <span className="px-3 py-1 bg-[#e50914] text-white text-sm rounded-full">
-                                        {selectedGenre}
-                                    </span>
-                                    <button
-                                        onClick={() => setSelectedGenre(null)}
-                                        className="text-sm text-[#a3a3a3] hover:text-[#e5e5e5]"
-                                    >
-                                        Clear
-                                    </button>
-                                </div>
-                            )}
                         </div>
 
                         {/* Genre Scatter Chart */}
                         <div className="card">
                             <div className="mb-4">
-                                <h3 className="text-lg font-semibold text-[#e5e5e5]">
-                                    Year vs Duration
-                                </h3>
-                                <p className="text-sm text-[#a3a3a3]">
-                                    Each dot represents a title. Hover for details.
+                                <h3 className="font-medium text-white">Year vs Duration</h3>
+                                <p className="text-xs text-[#71717a] mt-1">
+                                    Hover over points for details
                                 </p>
                             </div>
                             <GenreScatterChart
@@ -218,14 +228,26 @@ function DashboardContent() {
                 {/* View 3: Country Choropleth Map */}
                 <section className="mb-12">
                     <div className="card">
-                        <div className="mb-6">
-                            <h2 className="text-2xl font-bold text-[#e5e5e5] mb-2">
-                                Global Content Distribution
-                            </h2>
-                            <p className="text-[#a3a3a3]">
-                                Explore where content originates from around the world. Darker shades indicate
-                                more titles. Click on a country to see details.
-                            </p>
+                        <div className="flex items-start justify-between mb-6">
+                            <div>
+                                <h2 className="text-xl font-semibold text-white mb-1">
+                                    Global Distribution
+                                </h2>
+                                <p className="text-sm text-[#71717a]">
+                                    Content production by country
+                                </p>
+                            </div>
+                            {selectedCountry && (
+                                <button
+                                    onClick={() => setSelectedCountry(null)}
+                                    className="text-xs text-[#8b5cf6] hover:text-[#a78bfa] flex items-center gap-1"
+                                >
+                                    <span className="bg-[#8b5cf6]/20 px-2 py-0.5 rounded">
+                                        {selectedCountry}
+                                    </span>
+                                    <span>×</span>
+                                </button>
+                            )}
                         </div>
                         <ChoroplethMap
                             data={countryData || []}
@@ -233,41 +255,29 @@ function DashboardContent() {
                             selectedCountry={selectedCountry}
                             onCountryClick={handleCountryClick}
                         />
-                        {selectedCountry && (
-                            <div className="mt-4 flex items-center gap-4 flex-wrap">
-                                <span className="text-sm text-[#a3a3a3]">Selected country:</span>
-                                <span className="px-3 py-1 bg-[#e50914] text-white text-sm rounded-full">
-                                    {selectedCountry}
-                                </span>
-                                {(() => {
-                                    const country = countryData?.find(c => c.country === selectedCountry);
-                                    if (!country) return null;
-                                    return (
-                                        <div className="flex items-center gap-4 text-sm text-[#a3a3a3]">
-                                            <span>Total: {country.count.toLocaleString()} titles</span>
-                                            <span>Movies: {country.movieCount.toLocaleString()}</span>
-                                            <span>TV Shows: {country.tvShowCount.toLocaleString()}</span>
-                                        </div>
-                                    );
-                                })()}
-                                <button
-                                    onClick={() => setSelectedCountry(null)}
-                                    className="text-sm text-[#a3a3a3] hover:text-[#e5e5e5]"
-                                >
-                                    Clear
-                                </button>
-                            </div>
-                        )}
+                        {selectedCountry && (() => {
+                            const country = countryData?.find(c => c.country === selectedCountry);
+                            if (!country) return null;
+                            return (
+                                <div className="mt-4 pt-4 border-t border-[#27272a] flex items-center gap-6 text-sm">
+                                    <span className="text-[#a1a1aa]">
+                                        <span className="text-white font-medium">{country.count.toLocaleString()}</span> titles
+                                    </span>
+                                    <span className="text-[#71717a]">
+                                        {country.movieCount} movies · {country.tvShowCount} TV shows
+                                    </span>
+                                </div>
+                            );
+                        })()}
                     </div>
                 </section>
             </main>
 
             {/* Footer */}
-            <footer className="border-t border-[#2a2a2a] py-8">
+            <footer className="border-t border-[#27272a] py-8 mt-12">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <p className="text-center text-[#666] text-sm">
-                        Data sourced from Netflix titles dataset. Built with Next.js, Nivo, and
-                        Tailwind CSS.
+                    <p className="text-center text-[#52525b] text-sm">
+                        Data from Netflix titles dataset · Built with Next.js, Nivo & Tailwind
                     </p>
                 </div>
             </footer>

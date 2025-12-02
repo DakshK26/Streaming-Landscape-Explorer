@@ -26,21 +26,21 @@ const iconMap = {
 };
 
 const colorMap = {
-    info: 'from-blue-500 to-blue-600',
-    trend: 'from-green-500 to-green-600',
-    highlight: 'from-amber-500 to-orange-600',
+    info: 'from-violet-500 to-violet-600',
+    trend: 'from-emerald-500 to-emerald-600',
+    highlight: 'from-cyan-500 to-cyan-600',
 };
 
 const bgColorMap = {
-    info: 'bg-blue-500/10 border-blue-500/20',
-    trend: 'bg-green-500/10 border-green-500/20',
-    highlight: 'bg-amber-500/10 border-amber-500/20',
+    info: 'bg-violet-500/10 border-violet-500/20',
+    trend: 'bg-emerald-500/10 border-emerald-500/20',
+    highlight: 'bg-cyan-500/10 border-cyan-500/20',
 };
 
 const textColorMap = {
-    info: 'text-blue-400',
-    trend: 'text-green-400',
-    highlight: 'text-amber-400',
+    info: 'text-violet-400',
+    trend: 'text-emerald-400',
+    highlight: 'text-cyan-400',
 };
 
 export default function InsightCards({ insights, loading }: InsightCardsProps) {
@@ -50,7 +50,7 @@ export default function InsightCards({ insights, loading }: InsightCardsProps) {
                 {[...Array(6)].map((_, i) => (
                     <div
                         key={i}
-                        className="h-32 bg-[#1a1a1a] rounded-xl border border-[#2a2a2a] animate-pulse"
+                        className="h-32 bg-zinc-900/50 rounded-xl border border-zinc-800/50 animate-pulse"
                     />
                 ))}
             </div>
@@ -59,7 +59,7 @@ export default function InsightCards({ insights, loading }: InsightCardsProps) {
 
     if (!insights || insights.length === 0) {
         return (
-            <div className="text-center py-8 text-[#a3a3a3]">
+            <div className="text-center py-8 text-zinc-500">
                 No insights available for the current selection
             </div>
         );
@@ -71,9 +71,9 @@ export default function InsightCards({ insights, loading }: InsightCardsProps) {
                 <div
                     key={insight.id}
                     className={`
-            relative overflow-hidden rounded-xl border p-4
+            relative overflow-hidden rounded-xl border p-4 backdrop-blur-sm
             ${bgColorMap[insight.type]}
-            transition-all duration-200 hover:scale-[1.02]
+            transition-all duration-300 hover:scale-[1.02] hover:shadow-lg
           `}
                 >
                     {/* Icon */}
@@ -81,7 +81,7 @@ export default function InsightCards({ insights, loading }: InsightCardsProps) {
                         className={`
               inline-flex items-center justify-center w-10 h-10 rounded-lg
               bg-gradient-to-br ${colorMap[insight.type]}
-              text-white mb-3
+              text-white mb-3 shadow-lg
             `}
                     >
                         {iconMap[insight.type]}
@@ -91,7 +91,7 @@ export default function InsightCards({ insights, loading }: InsightCardsProps) {
                     <h3 className={`font-semibold ${textColorMap[insight.type]} mb-1`}>
                         {insight.title}
                     </h3>
-                    <p className="text-sm text-[#a3a3a3] leading-relaxed">
+                    <p className="text-sm text-zinc-400 leading-relaxed">
                         {insight.description}
                     </p>
 
@@ -100,8 +100,8 @@ export default function InsightCards({ insights, loading }: InsightCardsProps) {
                         <div className="mt-3">
                             <span
                                 className={`
-                  inline-block px-2 py-1 rounded-full text-xs font-medium
-                  bg-gradient-to-r ${colorMap[insight.type]} text-white
+                  inline-block px-3 py-1 rounded-full text-xs font-medium
+                  bg-gradient-to-r ${colorMap[insight.type]} text-white shadow-sm
                 `}
                             >
                                 {typeof insight.value === 'number'
