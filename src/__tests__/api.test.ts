@@ -201,8 +201,8 @@ describe('API Routes', () => {
 
       expect(response.status).toBe(200);
       expect(data).toHaveLength(1);
-      expect(data[0].name).toBe('United States');
-      expect(data[0].code).toBe('USA');
+      expect(data[0].country).toBe('United States');
+      expect(data[0].iso).toBe('USA');
     });
   });
 
