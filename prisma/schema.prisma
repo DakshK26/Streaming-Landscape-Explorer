@@ -1,0 +1,75 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// Netflix title (movie or TV show)
+model Title {
+  id          String   @id @default(cuid())
+  showId      String   @unique @map("show_id")
+  type        String   // "Movie" or "TV Show"
+  title       String
+  director    String?
+  cast        String?
+  dateAdded   DateTime? @map("date_added")
+  releaseYear Int      @map("release_year")
+  rating      String?  // Content rating (PG, TV-MA, etc.)
+  duration    String?  // "90 min" or "2 Seasons"
+  description String?
+
+  // Relations
+  countries   TitleCountry[]
+  genres      TitleGenre[]
+
+  @@map("titles")
+}
+
+// Country lookup table
+model Country {
+  id     String         @id @default(cuid())
+  name   String         @unique
+  code   String?        // ISO country code for map
+  titles TitleCountry[]
+
+  @@map("countries")
+}
+
+// Genre lookup table
+model Genre {
+  id     String       @id @default(cuid())
+  name   String       @unique
+  titles TitleGenre[]
+
+  @@map("genres")
+}
+
+// Many-to-many: Title <-> Country
+model TitleCountry {
+  titleId   String
+  countryId String
+  isPrimary Boolean @default(false) @map("is_primary")
+
+  title   Title   @relation(fields: [titleId], references: [id], onDelete: Cascade)
+  country Country @relation(fields: [countryId], references: [id], onDelete: Cascade)
+
+  @@id([titleId, countryId])
+  @@map("title_countries")
+}
+
+// Many-to-many: Title <-> Genre
+model TitleGenre {
+  titleId String
+  genreId String
+
+  title Title @relation(fields: [titleId], references: [id], onDelete: Cascade)
+  genre Genre @relation(fields: [genreId], references: [id], onDelete: Cascade)
+
+  @@id([titleId, genreId])
+  @@map("title_genres")
+}
