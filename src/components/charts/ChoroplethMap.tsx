@@ -137,16 +137,48 @@ function ChoroplethMap({
     // Create lookup map from country name to data
     const dataByName = useMemo(() => {
         const map = new Map<string, CountryData>();
-        data.forEach((item) => {
-            // Add by country name
-            map.set(item.country.toLowerCase(), item);
-            // Also add by ISO code variants
-            if (item.iso && isoToName[item.iso]) {
-                isoToName[item.iso].forEach(name => {
-                    map.set(name.toLowerCase(), item);
+        
+        // First, add all reverse mappings from isoToName
+        Object.entries(isoToName).forEach(([iso, names]) => {
+            const countryData = data.find(d => d.iso === iso);
+            if (countryData) {
+                names.forEach(name => {
+                    map.set(name.toLowerCase(), countryData);
                 });
             }
         });
+        
+        // Then add by country name directly from data
+        data.forEach((item) => {
+            // Add by country name (lowercase for matching)
+            map.set(item.country.toLowerCase(), item);
+            
+            // Also add some common variations
+            const variations: string[] = [];
+            
+            // Handle country name variations
+            if (item.country === 'United States') {
+                variations.push('united states of america');
+            }
+            if (item.country === 'United Kingdom') {
+                variations.push('great britain', 'britain');
+            }
+            if (item.country === 'South Korea') {
+                variations.push('korea, republic of', 'republic of korea', 'korea');
+            }
+            if (item.country === 'Russia') {
+                variations.push('russian federation');
+            }
+            if (item.country === 'Czech Republic') {
+                variations.push('czechia');
+            }
+            if (item.country === 'Vietnam') {
+                variations.push('viet nam');
+            }
+            
+            variations.forEach(v => map.set(v, item));
+        });
+        
         return map;
     }, [data]);
 
