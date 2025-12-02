@@ -100,14 +100,12 @@ function DashboardContent() {
 
                 {/* Filters Section */}
                 <section className="mb-8 card">
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         <div className="lg:col-span-2">
                             <GenreFilter genres={genreData || []} loading={genreLoading} maxVisible={10} />
                         </div>
-                        <div>
+                        <div className="space-y-6">
                             <TypeFilter />
-                        </div>
-                        <div>
                             {summaryData && (
                                 <YearRangeSlider
                                     minYear={summaryData.yearRange[0]}
