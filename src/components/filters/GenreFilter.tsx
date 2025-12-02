@@ -68,7 +68,7 @@ export default function GenreFilter({ genres, loading, maxVisible = 8 }: GenreFi
 
     const filteredGenres = useMemo(() => {
         if (!searchQuery) return genres;
-        return genres.filter(g => 
+        return genres.filter(g =>
             g.name.toLowerCase().includes(searchQuery.toLowerCase())
         );
     }, [genres, searchQuery]);
@@ -127,12 +127,12 @@ export default function GenreFilter({ genres, loading, maxVisible = 8 }: GenreFi
 
             {/* Genre Modal */}
             {isModalOpen && (
-                <div 
+                <div
                     className="fixed inset-0 z-50 flex items-center justify-center p-4"
                     onClick={() => setIsModalOpen(false)}
                 >
                     <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" />
-                    <div 
+                    <div
                         className="relative bg-[#18181b] border border-[#27272a] rounded-2xl w-full max-w-2xl max-h-[80vh] overflow-hidden shadow-2xl"
                         onClick={(e) => e.stopPropagation()}
                     >

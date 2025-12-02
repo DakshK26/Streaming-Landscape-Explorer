@@ -104,7 +104,7 @@ export default function TimelineChart({ data, loading }: TimelineChartProps) {
                                     key={point.id}
                                     className="flex items-center gap-2 text-sm"
                                 >
-                                    <span 
+                                    <span
                                         className="w-2.5 h-2.5 rounded-full"
                                         style={{ backgroundColor: point.seriesColor }}
                                     />

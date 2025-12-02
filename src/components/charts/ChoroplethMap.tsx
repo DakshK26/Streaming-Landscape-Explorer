@@ -137,7 +137,7 @@ function ChoroplethMap({
     // Create lookup map from country name to data
     const dataByName = useMemo(() => {
         const map = new Map<string, CountryData>();
-        
+
         // First, add all reverse mappings from isoToName
         Object.entries(isoToName).forEach(([iso, names]) => {
             const countryData = data.find(d => d.iso === iso);
@@ -147,15 +147,15 @@ function ChoroplethMap({
                 });
             }
         });
-        
+
         // Then add by country name directly from data
         data.forEach((item) => {
             // Add by country name (lowercase for matching)
             map.set(item.country.toLowerCase(), item);
-            
+
             // Also add some common variations
             const variations: string[] = [];
-            
+
             // Handle country name variations
             if (item.country === 'United States') {
                 variations.push('united states of america');
@@ -175,10 +175,10 @@ function ChoroplethMap({
             if (item.country === 'Vietnam') {
                 variations.push('viet nam');
             }
-            
+
             variations.forEach(v => map.set(v, item));
         });
-        
+
         return map;
     }, [data]);
 

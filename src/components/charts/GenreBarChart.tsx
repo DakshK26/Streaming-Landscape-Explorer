@@ -61,11 +61,13 @@ export default function GenreBarChart({
                 axisRight={null}
                 axisBottom={{
                     tickSize: 5,
-                    tickPadding: 5,
+                    tickPadding: 8,
                     tickRotation: 0,
                     legend: 'Number of Titles',
                     legendPosition: 'middle',
                     legendOffset: 45,
+                    format: (value) => value >= 1000 ? `${(Number(value) / 1000).toFixed(1)}k` : String(value),
+                    tickValues: 5,
                 }}
                 axisLeft={{
                     tickSize: 5,

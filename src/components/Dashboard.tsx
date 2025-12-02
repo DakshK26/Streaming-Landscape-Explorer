@@ -80,7 +80,7 @@ function DashboardContent() {
                         Explore the evolution of streaming content across time, genres, and regions.
                         Discover trends and insights in the world of entertainment.
                     </p>
-                    
+
                     {/* Quick Stats */}
                     {summaryData && (
                         <div className="mt-10 grid grid-cols-2 md:grid-cols-4 gap-4 max-w-3xl mx-auto">

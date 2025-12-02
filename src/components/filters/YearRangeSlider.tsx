@@ -11,7 +11,7 @@ interface YearRangeSliderProps {
 export default function YearRangeSlider({ minYear, maxYear }: YearRangeSliderProps) {
     const { filters, updateFilter } = useFilters();
     const [isInitialized, setIsInitialized] = useState(false);
-    
+
     // Initialize the filter with actual data range on first load
     useEffect(() => {
         if (!isInitialized && minYear && maxYear) {
@@ -23,8 +23,8 @@ export default function YearRangeSlider({ minYear, maxYear }: YearRangeSliderPro
         }
     }, [minYear, maxYear, isInitialized, filters.yearRange, updateFilter]);
 
-    const [rangeMin, rangeMax] = filters.yearRange[0] === 1900 
-        ? [minYear, maxYear] 
+    const [rangeMin, rangeMax] = filters.yearRange[0] === 1900
+        ? [minYear, maxYear]
         : filters.yearRange;
 
     const handleMinChange = (e: React.ChangeEvent<HTMLInputElement>) => {

@@ -97,7 +97,7 @@ export default function GenreScatterChart({
         <div className="h-[400px]">
             <ResponsiveScatterPlot
                 data={validChartData}
-                margin={{ top: 20, right: 20, bottom: 60, left: 70 }}
+                margin={{ top: 20, right: 30, bottom: 60, left: 80 }}
                 xScale={{ type: 'linear', min: 'auto', max: 'auto' }}
                 yScale={{ type: 'linear', min: 0, max: 'auto' }}
                 axisTop={null}
@@ -117,7 +117,7 @@ export default function GenreScatterChart({
                     tickRotation: 0,
                     legend: yAxisLabel,
                     legendPosition: 'middle',
-                    legendOffset: -55,
+                    legendOffset: -65,
                 }}
                 colors={(node) => {
                     const series = validChartData.find(s => s.id === node.serieId);
@@ -140,8 +140,8 @@ export default function GenreScatterChart({
                             </p>
                             <div className="space-y-1 text-xs">
                                 <div className="flex items-center gap-2">
-                                    <span 
-                                        className="w-2.5 h-2.5 rounded-full" 
+                                    <span
+                                        className="w-2.5 h-2.5 rounded-full"
                                         style={{ backgroundColor: node.color }}
                                     />
                                     <span className="text-[#a1a1aa]">{node.serieId}</span>
