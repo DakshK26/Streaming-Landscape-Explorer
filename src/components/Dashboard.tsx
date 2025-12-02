@@ -73,9 +73,6 @@ function DashboardContent() {
             <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 relative z-10">
                 {/* Hero Section */}
                 <section className="mb-16 text-center">
-                    <div className="inline-block mb-4 px-4 py-1.5 rounded-full bg-violet-500/10 border border-violet-500/20">
-                        <span className="text-sm text-violet-400 font-medium">📊 Netflix Catalog Analysis</span>
-                    </div>
                     <h1 className="text-5xl md:text-6xl font-bold mb-6 tracking-tight">
                         <span className="bg-gradient-to-r from-violet-400 via-fuchsia-400 to-cyan-400 bg-clip-text text-transparent">
                             Streaming Landscape

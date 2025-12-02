@@ -66,9 +66,18 @@ export default function GenreTrendChart({
             .sort((a, b) => b.total - a.total);
 
         // If a genre is selected, show only that one, otherwise top 6
-        const topGenres = selectedGenre
-            ? genreTotals.filter(g => g.genre === selectedGenre).slice(0, 1)
+        // The selectedGenre is already a consolidated name from the bar chart
+        let topGenres = selectedGenre
+            ? genreTotals.filter(g => g.genre.toLowerCase() === selectedGenre.toLowerCase()).slice(0, 1)
             : genreTotals.slice(0, 6);
+
+        // If no exact match found, try to find partial match
+        if (selectedGenre && topGenres.length === 0) {
+            topGenres = genreTotals.filter(g => 
+                g.genre.toLowerCase().includes(selectedGenre.toLowerCase()) ||
+                selectedGenre.toLowerCase().includes(g.genre.toLowerCase())
+            ).slice(0, 1);
+        }
 
         // Get year range
         const years = consolidatedData.map(d => d.releaseYear);
