@@ -233,13 +233,13 @@ export default function AnimatedInsightsTicker({
                     </div>
                 </div>
 
-                {/* Decorative corner accents */}
+                {/* Decorative corner accents - pointer-events-none so they don't block clicks */}
                 <div
-                    className={`absolute top-0 left-0 w-16 h-16 bg-gradient-to-br ${currentInsight.color} opacity-10 rounded-tl-2xl`}
+                    className={`absolute top-0 left-0 w-16 h-16 bg-gradient-to-br ${currentInsight.color} opacity-10 rounded-tl-2xl pointer-events-none`}
                     style={{ transition: 'background 0.5s ease-in-out' }}
                 />
                 <div
-                    className={`absolute bottom-0 right-0 w-16 h-16 bg-gradient-to-tl ${currentInsight.color} opacity-10 rounded-br-2xl`}
+                    className={`absolute bottom-0 right-0 w-16 h-16 bg-gradient-to-tl ${currentInsight.color} opacity-10 rounded-br-2xl pointer-events-none`}
                     style={{ transition: 'background 0.5s ease-in-out' }}
                 />
             </div>
