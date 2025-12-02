@@ -166,11 +166,10 @@ export default function MovieSearch() {
                                         className="w-full px-4 py-3 flex items-center gap-4 hover:bg-zinc-800/50 transition-colors text-left border-b border-zinc-800/50 last:border-0"
                                     >
                                         {/* Type Badge */}
-                                        <div className={`flex-shrink-0 px-2 py-1 rounded-lg text-xs font-medium ${
-                                            title.type === 'Movie'
+                                        <div className={`flex-shrink-0 px-2 py-1 rounded-lg text-xs font-medium ${title.type === 'Movie'
                                                 ? 'bg-violet-500/20 text-violet-400'
                                                 : 'bg-cyan-500/20 text-cyan-400'
-                                        }`}>
+                                            }`}>
                                             {title.type === 'Movie' ? '🎬' : '📺'}
                                         </div>
 
@@ -218,11 +217,10 @@ export default function MovieSearch() {
                         onClick={(e) => e.stopPropagation()}
                     >
                         {/* Header with gradient */}
-                        <div className={`relative h-32 ${
-                            selectedTitle.type === 'Movie'
+                        <div className={`relative h-32 ${selectedTitle.type === 'Movie'
                                 ? 'bg-gradient-to-br from-violet-600 via-purple-600 to-fuchsia-600'
                                 : 'bg-gradient-to-br from-cyan-600 via-blue-600 to-teal-600'
-                        }`}>
+                            }`}>
                             {/* Decorative pattern */}
                             <div className="absolute inset-0 opacity-20">
                                 <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_40%,rgba(255,255,255,0.3),transparent_50%)]" />
@@ -293,11 +291,10 @@ export default function MovieSearch() {
                                         {selectedTitle.genres.map((genre) => (
                                             <span
                                                 key={genre}
-                                                className={`px-3 py-1 rounded-full text-sm ${
-                                                    selectedTitle.type === 'Movie'
+                                                className={`px-3 py-1 rounded-full text-sm ${selectedTitle.type === 'Movie'
                                                         ? 'bg-violet-500/20 text-violet-300'
                                                         : 'bg-cyan-500/20 text-cyan-300'
-                                                }`}
+                                                    }`}
                                             >
                                                 {genre}
                                             </span>

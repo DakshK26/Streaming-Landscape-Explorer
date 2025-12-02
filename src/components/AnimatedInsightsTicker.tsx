@@ -127,7 +127,7 @@ export default function AnimatedInsightsTicker({
     const goToInsight = useCallback((index: number) => {
         setCurrentIndex(index);
         setProgressKey(prev => prev + 1);
-        
+
         // Reset the auto-rotate timer
         if (intervalRef.current) {
             clearInterval(intervalRef.current);
@@ -163,7 +163,7 @@ export default function AnimatedInsightsTicker({
     return (
         <div className="relative w-full max-w-2xl mx-auto mb-10">
             {/* Glowing background effect */}
-            <div 
+            <div
                 className={`absolute inset-0 bg-gradient-to-r ${currentInsight.color} opacity-20 blur-2xl rounded-full`}
                 style={{ transition: 'background 0.8s ease-in-out' }}
             />
@@ -198,7 +198,7 @@ export default function AnimatedInsightsTicker({
                                 }}
                             >
                                 {/* Icon with gradient background */}
-                                <div 
+                                <div
                                     className={`flex-shrink-0 w-12 h-12 rounded-xl bg-gradient-to-br ${insight.color} flex items-center justify-center text-2xl shadow-lg`}
                                 >
                                     {insight.icon}
@@ -223,11 +223,10 @@ export default function AnimatedInsightsTicker({
                             <button
                                 key={idx}
                                 onClick={() => goToInsight(idx)}
-                                className={`w-2 h-2 rounded-full transition-all duration-300 ${
-                                    idx === currentIndex
+                                className={`w-2 h-2 rounded-full transition-all duration-300 ${idx === currentIndex
                                         ? `bg-gradient-to-r ${insight.color} scale-125`
                                         : 'bg-zinc-700 hover:bg-zinc-600'
-                                }`}
+                                    }`}
                                 aria-label={`Go to insight ${idx + 1}`}
                             />
                         ))}
@@ -235,11 +234,11 @@ export default function AnimatedInsightsTicker({
                 </div>
 
                 {/* Decorative corner accents */}
-                <div 
+                <div
                     className={`absolute top-0 left-0 w-16 h-16 bg-gradient-to-br ${currentInsight.color} opacity-10 rounded-tl-2xl`}
                     style={{ transition: 'background 0.5s ease-in-out' }}
                 />
-                <div 
+                <div
                     className={`absolute bottom-0 right-0 w-16 h-16 bg-gradient-to-tl ${currentInsight.color} opacity-10 rounded-br-2xl`}
                     style={{ transition: 'background 0.5s ease-in-out' }}
                 />
