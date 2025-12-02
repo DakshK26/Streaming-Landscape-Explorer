@@ -5,6 +5,7 @@ import { useFilters, FilterProvider } from '@/context/FilterContext';
 import { useEffect, useState } from 'react';
 import Header from '@/components/layout/Header';
 import AnimatedInsightsTicker from '@/components/AnimatedInsightsTicker';
+import MovieSearch from '@/components/MovieSearch';
 import TimelineChart from '@/components/charts/TimelineChart';
 import GenreBarChart from '@/components/charts/GenreBarChart';
 import GenreTrendChart from '@/components/charts/GenreTrendChart';
@@ -91,6 +92,9 @@ function DashboardContent() {
                         genres={genreData || []}
                         countries={countryData || []}
                     />
+
+                    {/* Movie Search */}
+                    <MovieSearch />
 
                     {/* Quick Stats */}
                     {summaryData && (

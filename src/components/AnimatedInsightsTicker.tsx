@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import type { SummaryData, TimelineDataPoint, GenreStats, CountryData } from '@/types';
 
 interface AnimatedInsightsTickerProps {
@@ -24,7 +24,8 @@ export default function AnimatedInsightsTicker({
     countries,
 }: AnimatedInsightsTickerProps) {
     const [currentIndex, setCurrentIndex] = useState(0);
-    const [isAnimating, setIsAnimating] = useState(false);
+    const [progressKey, setProgressKey] = useState(0);
+    const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
     // Generate insights from the data
     const insights = useMemo<Insight[]>(() => {
@@ -44,7 +45,7 @@ export default function AnimatedInsightsTicker({
 
         // Peak year
         if (timeline.length > 0) {
-            const peakYear = timeline.reduce((max, item) => 
+            const peakYear = timeline.reduce((max, item) =>
                 (item.movies + item.tvShows) > (max.movies + max.tvShows) ? item : max
             );
             result.push({
@@ -105,7 +106,7 @@ export default function AnimatedInsightsTicker({
 
         // International content percentage
         if (genres.length > 0) {
-            const internationalGenre = genres.find(g => 
+            const internationalGenre = genres.find(g =>
                 g.name.toLowerCase().includes('international')
             );
             if (internationalGenre && summary.totalTitles) {
@@ -122,19 +123,35 @@ export default function AnimatedInsightsTicker({
         return result;
     }, [summary, timeline, genres, countries]);
 
-    // Auto-rotate insights
+    // Navigate to specific insight
+    const goToInsight = useCallback((index: number) => {
+        setCurrentIndex(index);
+        setProgressKey(prev => prev + 1);
+        
+        // Reset the auto-rotate timer
+        if (intervalRef.current) {
+            clearInterval(intervalRef.current);
+        }
+        intervalRef.current = setInterval(() => {
+            setCurrentIndex((prev) => (prev + 1) % insights.length);
+            setProgressKey(prev => prev + 1);
+        }, 5000);
+    }, [insights.length]);
+
+    // Auto-rotate insights with smooth transitions
     useEffect(() => {
         if (insights.length <= 1) return;
 
-        const interval = setInterval(() => {
-            setIsAnimating(true);
-            setTimeout(() => {
-                setCurrentIndex((prev) => (prev + 1) % insights.length);
-                setIsAnimating(false);
-            }, 300);
-        }, 4000);
+        intervalRef.current = setInterval(() => {
+            setCurrentIndex((prev) => (prev + 1) % insights.length);
+            setProgressKey(prev => prev + 1);
+        }, 5000);
 
-        return () => clearInterval(interval);
+        return () => {
+            if (intervalRef.current) {
+                clearInterval(intervalRef.current);
+            }
+        };
     }, [insights.length]);
 
     if (insights.length === 0) {
@@ -146,57 +163,69 @@ export default function AnimatedInsightsTicker({
     return (
         <div className="relative w-full max-w-2xl mx-auto mb-10">
             {/* Glowing background effect */}
-            <div className={`absolute inset-0 bg-gradient-to-r ${currentInsight.color} opacity-20 blur-2xl rounded-full transition-all duration-1000`} />
-            
+            <div 
+                className={`absolute inset-0 bg-gradient-to-r ${currentInsight.color} opacity-20 blur-2xl rounded-full`}
+                style={{ transition: 'background 0.8s ease-in-out' }}
+            />
+
             {/* Main container */}
-            <div className="relative bg-zinc-900/80 backdrop-blur-xl border border-zinc-800/80 rounded-2xl p-1">
-                {/* Progress bar */}
+            <div className="relative bg-zinc-900/80 backdrop-blur-xl border border-zinc-800/80 rounded-2xl p-1 overflow-hidden">
+                {/* Progress bar - using key to restart animation */}
                 <div className="absolute top-0 left-0 right-0 h-0.5 bg-zinc-800 rounded-t-2xl overflow-hidden">
-                    <div 
-                        className={`h-full bg-gradient-to-r ${currentInsight.color} animate-progress`}
-                        style={{ animationDuration: '4s' }}
+                    <div
+                        key={progressKey}
+                        className={`h-full bg-gradient-to-r ${currentInsight.color}`}
+                        style={{
+                            animation: 'progress 5s linear forwards',
+                            width: '0%',
+                        }}
                     />
                 </div>
 
-                {/* Content */}
+                {/* Content with crossfade effect */}
                 <div className="flex items-center justify-between p-4">
-                    {/* Insight display */}
-                    <div 
-                        className={`flex items-center gap-4 flex-1 transition-all duration-300 ${
-                            isAnimating ? 'opacity-0 translate-y-2' : 'opacity-100 translate-y-0'
-                        }`}
-                    >
-                        {/* Icon with gradient background */}
-                        <div className={`flex-shrink-0 w-12 h-12 rounded-xl bg-gradient-to-br ${currentInsight.color} flex items-center justify-center text-2xl shadow-lg`}>
-                            {currentInsight.icon}
-                        </div>
+                    {/* Insight carousel */}
+                    <div className="flex-1 relative h-12 overflow-hidden">
+                        {insights.map((insight, idx) => (
+                            <div
+                                key={idx}
+                                className="absolute inset-0 flex items-center gap-4"
+                                style={{
+                                    opacity: idx === currentIndex ? 1 : 0,
+                                    transform: idx === currentIndex ? 'translateY(0)' : 'translateY(10px)',
+                                    transition: 'opacity 0.5s ease-out, transform 0.5s ease-out',
+                                    pointerEvents: idx === currentIndex ? 'auto' : 'none',
+                                }}
+                            >
+                                {/* Icon with gradient background */}
+                                <div 
+                                    className={`flex-shrink-0 w-12 h-12 rounded-xl bg-gradient-to-br ${insight.color} flex items-center justify-center text-2xl shadow-lg`}
+                                >
+                                    {insight.icon}
+                                </div>
 
-                        {/* Text content */}
-                        <div className="flex-1 min-w-0">
-                            <p className="text-xs font-medium text-zinc-500 uppercase tracking-wider">
-                                {currentInsight.label}
-                            </p>
-                            <p className="text-lg font-semibold text-white truncate">
-                                {currentInsight.value}
-                            </p>
-                        </div>
+                                {/* Text content */}
+                                <div className="flex-1 min-w-0">
+                                    <p className="text-xs font-medium text-zinc-500 uppercase tracking-wider">
+                                        {insight.label}
+                                    </p>
+                                    <p className="text-lg font-semibold text-white truncate">
+                                        {insight.value}
+                                    </p>
+                                </div>
+                            </div>
+                        ))}
                     </div>
 
                     {/* Navigation dots */}
                     <div className="flex items-center gap-1.5 ml-4">
-                        {insights.map((_, idx) => (
+                        {insights.map((insight, idx) => (
                             <button
                                 key={idx}
-                                onClick={() => {
-                                    setIsAnimating(true);
-                                    setTimeout(() => {
-                                        setCurrentIndex(idx);
-                                        setIsAnimating(false);
-                                    }, 300);
-                                }}
+                                onClick={() => goToInsight(idx)}
                                 className={`w-2 h-2 rounded-full transition-all duration-300 ${
                                     idx === currentIndex
-                                        ? `bg-gradient-to-r ${currentInsight.color} scale-125`
+                                        ? `bg-gradient-to-r ${insight.color} scale-125`
                                         : 'bg-zinc-700 hover:bg-zinc-600'
                                 }`}
                                 aria-label={`Go to insight ${idx + 1}`}
@@ -206,13 +235,19 @@ export default function AnimatedInsightsTicker({
                 </div>
 
                 {/* Decorative corner accents */}
-                <div className={`absolute top-0 left-0 w-16 h-16 bg-gradient-to-br ${currentInsight.color} opacity-10 rounded-tl-2xl`} />
-                <div className={`absolute bottom-0 right-0 w-16 h-16 bg-gradient-to-tl ${currentInsight.color} opacity-10 rounded-br-2xl`} />
+                <div 
+                    className={`absolute top-0 left-0 w-16 h-16 bg-gradient-to-br ${currentInsight.color} opacity-10 rounded-tl-2xl`}
+                    style={{ transition: 'background 0.5s ease-in-out' }}
+                />
+                <div 
+                    className={`absolute bottom-0 right-0 w-16 h-16 bg-gradient-to-tl ${currentInsight.color} opacity-10 rounded-br-2xl`}
+                    style={{ transition: 'background 0.5s ease-in-out' }}
+                />
             </div>
 
             {/* Keyboard hint */}
             <p className="text-center text-xs text-zinc-600 mt-3">
-                Click dots to explore • Auto-rotates every 4s
+                Click dots to explore • Auto-rotates every 5s
             </p>
         </div>
     );
