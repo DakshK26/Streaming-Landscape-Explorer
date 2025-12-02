@@ -53,6 +53,14 @@ export interface CountryStats {
   topGenres: string[];
 }
 
+export interface CountryData {
+  country: string;
+  iso: string | null;
+  count: number;
+  movieCount: number;
+  tvShowCount: number;
+}
+
 export interface ScatterDataPoint {
   id: string;
   title: string;

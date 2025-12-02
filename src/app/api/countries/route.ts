@@ -1,6 +1,20 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
-import type { CountryStats } from '@/types';
+import type { CountryData } from '@/types';
+
+interface TitleResult {
+  type: string;
+}
+
+interface TitleJoin {
+  title: TitleResult;
+}
+
+interface CountryResult {
+  name: string;
+  code: string | null;
+  titles: TitleJoin[];
+}
 
 export async function GET(request: Request) {
   try {
@@ -35,7 +49,7 @@ export async function GET(request: Request) {
       countryRelationFilter.isPrimary = true;
     }
 
-    // Get all countries with their titles and top genres
+    // Get all countries with their titles
     const countries = await prisma.country.findMany({
       select: {
         name: true,
@@ -46,15 +60,6 @@ export async function GET(request: Request) {
             title: {
               select: {
                 type: true,
-                genres: {
-                  select: {
-                    genre: {
-                      select: {
-                        name: true,
-                      },
-                    },
-                  },
-                },
               },
             },
           },
@@ -62,44 +67,17 @@ export async function GET(request: Request) {
       },
     });
 
-    interface TitleData {
-      type: string;
-      genres: { genre: { name: string } }[];
-    }
-    
-    interface CountryData {
-      name: string;
-      code: string | null;
-      titles: { title: TitleData }[];
-    }
-
-    const countryStats: CountryStats[] = (countries as CountryData[]).map((country) => {
+    const countryStats: CountryData[] = (countries as CountryResult[]).map((country) => {
       const titles = country.titles.map((t) => t.title);
       const movieCount = titles.filter((t) => t.type === 'Movie').length;
       const tvShowCount = titles.filter((t) => t.type === 'TV Show').length;
 
-      // Count genres
-      const genreCounts = new Map<string, number>();
-      titles.forEach((title) => {
-        title.genres.forEach((g) => {
-          const genreName = g.genre.name;
-          genreCounts.set(genreName, (genreCounts.get(genreName) || 0) + 1);
-        });
-      });
-
-      // Get top 3 genres
-      const topGenres = Array.from(genreCounts.entries())
-        .sort((a, b) => b[1] - a[1])
-        .slice(0, 3)
-        .map(([name]) => name);
-
       return {
-        name: country.name,
-        code: country.code,
+        country: country.name,
+        iso: country.code,
         count: titles.length,
         movieCount,
         tvShowCount,
-        topGenres,
       };
     });
 

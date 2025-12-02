@@ -7,16 +7,18 @@ import Header from '@/components/layout/Header';
 import TimelineChart from '@/components/charts/TimelineChart';
 import GenreBarChart from '@/components/charts/GenreBarChart';
 import GenreScatterChart from '@/components/charts/GenreScatterChart';
+import ChoroplethMap from '@/components/charts/ChoroplethMap';
 import InsightCards from '@/components/insights/InsightCards';
 import GenreFilter from '@/components/filters/GenreFilter';
 import YearRangeSlider from '@/components/filters/YearRangeSlider';
 import TypeFilter from '@/components/filters/TypeFilter';
 import CountryModeToggle from '@/components/filters/CountryModeToggle';
-import type { SummaryData, TimelineDataPoint, GenreStats, ScatterDataPoint, Insight } from '@/types';
+import type { SummaryData, TimelineDataPoint, GenreStats, ScatterDataPoint, Insight, CountryData } from '@/types';
 
 function DashboardContent() {
   const { setSummary, summary, buildQueryString, filters, updateFilter } = useFilters();
   const [selectedGenre, setSelectedGenre] = useState<string | null>(null);
+  const [selectedCountry, setSelectedCountry] = useState<string | null>(null);
   
   // Fetch summary data
   const { data: summaryData, loading: summaryLoading } = useFetch<SummaryData>('/api/summary');
@@ -42,12 +44,26 @@ function DashboardContent() {
     `/api/insights${queryString ? `?${queryString}` : ''}`
   );
 
+  // Fetch countries for View 3
+  const { data: countryData, loading: countryLoading } = useFetch<CountryData[]>(
+    `/api/countries${queryString ? `?${queryString}` : ''}`
+  );
+
   // Handle genre click from bar chart
   const handleGenreClick = (genre: string) => {
     if (selectedGenre === genre) {
       setSelectedGenre(null);
     } else {
       setSelectedGenre(genre);
+    }
+  };
+
+  // Handle country click from choropleth map
+  const handleCountryClick = (country: CountryData | null) => {
+    if (country === null) {
+      setSelectedCountry(null);
+    } else {
+      setSelectedCountry(country.country);
     }
   };
 
@@ -201,10 +217,49 @@ function DashboardContent() {
           </div>
         </section>
 
-        {/* View 3 placeholder - will be added in next commit */}
+        {/* View 3: Country Choropleth Map */}
         <section className="mb-12">
-          <div className="card h-64 flex items-center justify-center">
-            <p className="text-[#a3a3a3]">Country Choropleth Map coming soon...</p>
+          <div className="card">
+            <div className="mb-6">
+              <h2 className="text-2xl font-bold text-[#e5e5e5] mb-2">
+                Global Content Distribution
+              </h2>
+              <p className="text-[#a3a3a3]">
+                Explore where content originates from around the world. Darker shades indicate
+                more titles. Click on a country to see details.
+              </p>
+            </div>
+            <ChoroplethMap
+              data={countryData || []}
+              loading={countryLoading}
+              selectedCountry={selectedCountry}
+              onCountryClick={handleCountryClick}
+            />
+            {selectedCountry && (
+              <div className="mt-4 flex items-center gap-4 flex-wrap">
+                <span className="text-sm text-[#a3a3a3]">Selected country:</span>
+                <span className="px-3 py-1 bg-[#e50914] text-white text-sm rounded-full">
+                  {selectedCountry}
+                </span>
+                {(() => {
+                  const country = countryData?.find(c => c.country === selectedCountry);
+                  if (!country) return null;
+                  return (
+                    <div className="flex items-center gap-4 text-sm text-[#a3a3a3]">
+                      <span>Total: {country.count.toLocaleString()} titles</span>
+                      <span>Movies: {country.movieCount.toLocaleString()}</span>
+                      <span>TV Shows: {country.tvShowCount.toLocaleString()}</span>
+                    </div>
+                  );
+                })()}
+                <button
+                  onClick={() => setSelectedCountry(null)}
+                  className="text-sm text-[#a3a3a3] hover:text-[#e5e5e5]"
+                >
+                  Clear
+                </button>
+              </div>
+            )}
           </div>
         </section>
       </main>
