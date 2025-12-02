@@ -73,7 +73,7 @@ export default function GenreTrendChart({
 
         // If no exact match found, try to find partial match
         if (selectedGenre && topGenres.length === 0) {
-            topGenres = genreTotals.filter(g => 
+            topGenres = genreTotals.filter(g =>
                 g.genre.toLowerCase().includes(selectedGenre.toLowerCase()) ||
                 selectedGenre.toLowerCase().includes(g.genre.toLowerCase())
             ).slice(0, 1);
