@@ -4,6 +4,7 @@ import { useFetch } from '@/hooks/useFetch';
 import { useFilters, FilterProvider } from '@/context/FilterContext';
 import { useEffect, useState } from 'react';
 import Header from '@/components/layout/Header';
+import AnimatedInsightsTicker from '@/components/AnimatedInsightsTicker';
 import TimelineChart from '@/components/charts/TimelineChart';
 import GenreBarChart from '@/components/charts/GenreBarChart';
 import GenreTrendChart from '@/components/charts/GenreTrendChart';
@@ -78,10 +79,18 @@ function DashboardContent() {
                             Streaming Landscape
                         </span>
                     </h1>
-                    <p className="text-lg text-zinc-400 max-w-2xl mx-auto leading-relaxed">
+                    <p className="text-lg text-zinc-400 max-w-2xl mx-auto leading-relaxed mb-10">
                         Explore the evolution of streaming content across time, genres, and regions.
                         Discover trends and insights in the world of entertainment.
                     </p>
+
+                    {/* Animated Insights Ticker */}
+                    <AnimatedInsightsTicker
+                        summary={summaryData}
+                        timeline={timelineData || []}
+                        genres={genreData || []}
+                        countries={countryData || []}
+                    />
 
                     {/* Quick Stats */}
                     {summaryData && (
