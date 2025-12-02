@@ -7,7 +7,7 @@
   --background-tertiary: #1a1a1a;
   --foreground: #e5e5e5;
   --foreground-muted: #a3a3a3;
-  
+
   /* Accent colors - vibrant palette */
   --accent-red: #e50914;
   --accent-blue: #0ea5e9;
@@ -17,11 +17,11 @@
   --accent-pink: #ec4899;
   --accent-yellow: #eab308;
   --accent-teal: #14b8a6;
-  
+
   /* Chart colors */
   --chart-movie: #e50914;
   --chart-tvshow: #0ea5e9;
-  
+
   /* Border colors */
   --border: #2a2a2a;
   --border-hover: #3a3a3a;
@@ -138,9 +138,12 @@ body {
 
 /* Animation for loading states */
 @keyframes pulse {
-  0%, 100% {
+
+  0%,
+  100% {
     opacity: 1;
   }
+
   50% {
     opacity: 0.5;
   }
