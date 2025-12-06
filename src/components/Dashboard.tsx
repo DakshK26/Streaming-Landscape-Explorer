@@ -75,11 +75,14 @@ function DashboardContent() {
             <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 relative z-10">
                 {/* Hero Section */}
                 <section className="mb-16 text-center">
-                    <h1 className="text-4xl md:text-5xl font-bold mb-4 text-white tracking-tight">
-                        Streaming Landscape
+                    <h1 className="text-5xl md:text-6xl font-bold mb-6 tracking-tight">
+                        <span className="bg-gradient-to-r from-violet-400 via-fuchsia-400 to-cyan-400 bg-clip-text text-transparent">
+                            Streaming Landscape
+                        </span>
                     </h1>
-                    <p className="text-base text-zinc-400 max-w-xl mx-auto leading-relaxed mb-8">
-                        Explore Netflix content across time, genres, and regions.
+                    <p className="text-lg text-zinc-400 max-w-2xl mx-auto leading-relaxed mb-10">
+                        Explore the evolution of streaming content across time, genres, and regions.
+                        Discover trends and insights in the world of entertainment.
                     </p>
 
                     {/* Animated Insights Ticker */}
@@ -95,22 +98,22 @@ function DashboardContent() {
 
                     {/* Quick Stats */}
                     {summaryData && (
-                        <div className="mt-8 grid grid-cols-2 md:grid-cols-4 gap-3 max-w-2xl mx-auto">
-                            <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-4">
-                                <p className="text-2xl font-semibold text-white">{summaryData.totalTitles.toLocaleString()}</p>
-                                <p className="text-xs text-zinc-500 mt-1">Total Titles</p>
+                        <div className="mt-10 grid grid-cols-2 md:grid-cols-4 gap-4 max-w-3xl mx-auto">
+                            <div className="group bg-zinc-900/50 backdrop-blur-sm border border-zinc-800/50 rounded-2xl p-5 hover:border-zinc-700/50 transition-all duration-300">
+                                <p className="text-3xl font-bold text-white">{summaryData.totalTitles.toLocaleString()}</p>
+                                <p className="text-sm text-zinc-500 mt-1">Total Titles</p>
                             </div>
-                            <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-4">
-                                <p className="text-2xl font-semibold text-violet-400">{summaryData.totalMovies.toLocaleString()}</p>
-                                <p className="text-xs text-zinc-500 mt-1">Movies</p>
+                            <div className="group bg-zinc-900/50 backdrop-blur-sm border border-zinc-800/50 rounded-2xl p-5 hover:border-violet-500/30 transition-all duration-300">
+                                <p className="text-3xl font-bold text-violet-400">{summaryData.totalMovies.toLocaleString()}</p>
+                                <p className="text-sm text-zinc-500 mt-1">Movies</p>
                             </div>
-                            <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-4">
-                                <p className="text-2xl font-semibold text-cyan-400">{summaryData.totalTVShows.toLocaleString()}</p>
-                                <p className="text-xs text-zinc-500 mt-1">TV Shows</p>
+                            <div className="group bg-zinc-900/50 backdrop-blur-sm border border-zinc-800/50 rounded-2xl p-5 hover:border-cyan-500/30 transition-all duration-300">
+                                <p className="text-3xl font-bold text-cyan-400">{summaryData.totalTVShows.toLocaleString()}</p>
+                                <p className="text-sm text-zinc-500 mt-1">TV Shows</p>
                             </div>
-                            <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-4">
-                                <p className="text-2xl font-semibold text-zinc-300">{summaryData.totalCountries}</p>
-                                <p className="text-xs text-zinc-500 mt-1">Countries</p>
+                            <div className="group bg-zinc-900/50 backdrop-blur-sm border border-zinc-800/50 rounded-2xl p-5 hover:border-emerald-500/30 transition-all duration-300">
+                                <p className="text-3xl font-bold text-emerald-400">{summaryData.totalCountries}</p>
+                                <p className="text-sm text-zinc-500 mt-1">Countries</p>
                             </div>
                         </div>
                     )}
