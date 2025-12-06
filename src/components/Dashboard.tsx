@@ -292,7 +292,7 @@ function DashboardContent() {
             <footer className="border-t border-[#27272a] py-8 mt-12">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <p className="text-center text-[#52525b] text-sm">
-                        Data from Netflix titles dataset · Built with Next.js, Nivo & Tailwind
+                        © 2025 Streaming Landscape Explorer. Built by Daksh Khanna
                     </p>
                 </div>
             </footer>
