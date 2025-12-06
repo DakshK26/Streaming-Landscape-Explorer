@@ -82,7 +82,7 @@ function DashboardContent() {
                     </h1>
                     <p className="text-lg text-zinc-400 max-w-2xl mx-auto leading-relaxed mb-10">
                         Explore the evolution of streaming content across time, genres, and regions.
-                        Discover trends and insights in the world of entertainment.
+                        Discover insights from the world of entertainment.
                     </p>
 
                     {/* Animated Insights Ticker */}
