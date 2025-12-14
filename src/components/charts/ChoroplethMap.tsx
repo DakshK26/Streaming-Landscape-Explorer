@@ -188,11 +188,11 @@ function ChoroplethMap({
         return Math.max(...data.map((d) => d.count));
     }, [data]);
 
-    // Purple-cyan gradient color scale using log scale for better distribution
+    // Retro warm gradient color scale using log scale for better distribution
     const colorScale = useMemo(() => {
         return scaleLog<string>()
             .domain([1, maxCount])
-            .range(['#1e1b4b', '#06b6d4'])
+            .range(['#1a1a1a', '#c9a227'])
             .clamp(true);
     }, [maxCount]);
 
@@ -237,15 +237,15 @@ function ChoroplethMap({
         return (
             <div className="h-[500px] flex items-center justify-center">
                 <div className="flex flex-col items-center gap-4">
-                    <div className="w-12 h-12 border-4 border-[#8b5cf6] border-t-transparent rounded-full animate-spin" />
-                    <p className="text-[#a1a1aa]">Loading map data...</p>
+                    <div className="w-12 h-12 border-4 border-[#c9a227] border-t-transparent rounded-full animate-spin" />
+                    <p className="text-[#b8b8a8]">Loading map data...</p>
                 </div>
             </div>
         );
     }
 
     return (
-        <div className="relative h-[500px] rounded-xl overflow-hidden bg-[#0c0c0f]" onMouseMove={handleMouseMove}>
+        <div className="relative h-[500px] rounded-xl overflow-hidden bg-[#0f0f0f]" onMouseMove={handleMouseMove}>
             <ComposableMap
                 projection="geoMercator"
                 projectionConfig={{
@@ -279,22 +279,22 @@ function ChoroplethMap({
                                         }}
                                         style={{
                                             default: {
-                                                fill: count > 0 ? colorScale(count) : '#18181b',
-                                                stroke: isSelected ? '#8b5cf6' : '#27272a',
+                                                fill: count > 0 ? colorScale(count) : '#1a1a1a',
+                                                stroke: isSelected ? '#c9a227' : '#2a2a2a',
                                                 strokeWidth: isSelected ? 1.5 : 0.3,
                                                 outline: 'none',
                                                 cursor: countryData ? 'pointer' : 'default',
                                             },
                                             hover: {
-                                                fill: count > 0 ? '#8b5cf6' : '#27272a',
-                                                stroke: '#a78bfa',
+                                                fill: count > 0 ? '#c9a227' : '#252525',
+                                                stroke: '#d4b13a',
                                                 strokeWidth: 1,
                                                 outline: 'none',
                                                 cursor: countryData ? 'pointer' : 'default',
                                             },
                                             pressed: {
-                                                fill: '#7c3aed',
-                                                stroke: '#a78bfa',
+                                                fill: '#b8922a',
+                                                stroke: '#d4b13a',
                                                 strokeWidth: 1.5,
                                                 outline: 'none',
                                             },
@@ -310,48 +310,48 @@ function ChoroplethMap({
             {/* Tooltip */}
             {tooltip.show && tooltip.content && (
                 <div
-                    className="fixed z-50 px-4 py-3 bg-[#18181b] border border-[#27272a] rounded-xl shadow-2xl pointer-events-none"
+                    className="fixed z-50 px-4 py-3 bg-[#1a1a1a] border border-[#2a2a2a] rounded-xl shadow-2xl pointer-events-none"
                     style={{
                         left: tooltip.x + 15,
                         top: tooltip.y - 50,
                     }}
                 >
-                    <p className="font-semibold text-white mb-1">{tooltip.content.name}</p>
+                    <p className="font-semibold text-[#f5f5f0] mb-1">{tooltip.content.name}</p>
                     {tooltip.content.count > 0 ? (
                         <div className="text-sm space-y-0.5">
-                            <p className="text-[#a1a1aa]">
-                                <span className="text-[#8b5cf6] font-medium">{tooltip.content.count.toLocaleString()}</span> titles
+                            <p className="text-[#b8b8a8]">
+                                <span className="text-[#c9a227] font-medium">{tooltip.content.count.toLocaleString()}</span> titles
                             </p>
-                            <p className="text-[#71717a]">
+                            <p className="text-[#8a8a7a]">
                                 {tooltip.content.movies} movies · {tooltip.content.tvShows} TV shows
                             </p>
                         </div>
                     ) : (
-                        <p className="text-sm text-[#71717a]">No data</p>
+                        <p className="text-sm text-[#8a8a7a]">No data</p>
                     )}
                 </div>
             )}
 
-            {/* Legend */}
-            <div className="absolute bottom-4 left-4 bg-[#18181b]/95 border border-[#27272a] rounded-xl p-4 backdrop-blur-sm">
-                <p className="text-xs font-medium text-[#a1a1aa] mb-2">Content Volume</p>
+            {/* Legend - Retro style */}
+            <div className="absolute bottom-4 left-4 bg-[#1a1a1a]/95 border border-[#2a2a2a] rounded-xl p-4 backdrop-blur-sm">
+                <p className="text-xs font-medium text-[#b8b8a8] mb-2">Content Volume</p>
                 <div className="flex items-center gap-1">
-                    <span className="text-[10px] text-[#71717a]">1</span>
+                    <span className="text-[10px] text-[#8a8a7a]">1</span>
                     <div className="flex h-2 rounded-full overflow-hidden">
-                        <div className="w-6" style={{ background: '#1e1b4b' }} />
-                        <div className="w-6" style={{ background: '#312e81' }} />
-                        <div className="w-6" style={{ background: '#4338ca' }} />
-                        <div className="w-6" style={{ background: '#6366f1' }} />
-                        <div className="w-6" style={{ background: '#8b5cf6' }} />
-                        <div className="w-6" style={{ background: '#06b6d4' }} />
+                        <div className="w-6" style={{ background: '#252525' }} />
+                        <div className="w-6" style={{ background: '#3d3520' }} />
+                        <div className="w-6" style={{ background: '#5a4f2a' }} />
+                        <div className="w-6" style={{ background: '#7a6935' }} />
+                        <div className="w-6" style={{ background: '#a4882e' }} />
+                        <div className="w-6" style={{ background: '#c9a227' }} />
                     </div>
-                    <span className="text-[10px] text-[#71717a]">{maxCount.toLocaleString()}</span>
+                    <span className="text-[10px] text-[#8a8a7a]">{maxCount.toLocaleString()}</span>
                 </div>
             </div>
 
             {/* Controls hint */}
-            <div className="absolute top-4 right-4 bg-[#18181b]/95 border border-[#27272a] rounded-lg px-3 py-2 backdrop-blur-sm">
-                <p className="text-[10px] text-[#71717a]">
+            <div className="absolute top-4 right-4 bg-[#1a1a1a]/95 border border-[#2a2a2a] rounded-lg px-3 py-2 backdrop-blur-sm">
+                <p className="text-[10px] text-[#8a8a7a]">
                     Scroll to zoom · Drag to pan
                 </p>
             </div>

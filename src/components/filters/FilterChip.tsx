@@ -23,19 +23,32 @@ export default function FilterChip({
         rounded-full text-sm font-medium
         transition-all duration-300
         ${active
-                    ? 'bg-gradient-to-r from-violet-600 to-cyan-600 text-white border-violet-500/50 shadow-lg shadow-violet-500/20'
-                    : 'bg-zinc-900/50 text-zinc-400 border-zinc-700/50 hover:bg-zinc-800/70 hover:text-zinc-200 hover:border-zinc-600/50'
+                    ? 'text-[#0f0f0f] shadow-lg'
+                    : 'bg-[#1a1a1a]/50 text-[#b8b8a8] border-[#2a2a2a] hover:bg-[#252525]/70 hover:text-[#f5f5f0] hover:border-[#404040]'
                 }
         border cursor-pointer
       `}
-            style={active && color ? { backgroundColor: color, borderColor: color } : undefined}
+            style={active && color 
+                ? { 
+                    backgroundColor: color, 
+                    borderColor: color,
+                    boxShadow: `0 4px 12px ${color}33`
+                } 
+                : active 
+                    ? { 
+                        backgroundColor: '#c9a227', 
+                        borderColor: '#c9a227',
+                        boxShadow: '0 4px 12px rgba(201, 162, 39, 0.3)'
+                    }
+                    : undefined
+            }
         >
             <span>{label}</span>
             {count !== undefined && (
                 <span
                     className={`
             text-xs px-1.5 py-0.5 rounded-full
-            ${active ? 'bg-white/20' : 'bg-zinc-800'}
+            ${active ? 'bg-black/20' : 'bg-[#252525]'}
           `}
                 >
                     {count.toLocaleString()}

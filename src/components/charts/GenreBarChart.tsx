@@ -19,7 +19,7 @@ export default function GenreBarChart({
     if (loading) {
         return (
             <div className="h-[400px] flex items-center justify-center">
-                <div className="animate-pulse text-zinc-500">Loading genre data...</div>
+                <div className="animate-pulse text-[#8a8a7a]">Loading genre data...</div>
             </div>
         );
     }
@@ -27,7 +27,7 @@ export default function GenreBarChart({
     if (!data || data.length === 0) {
         return (
             <div className="h-[400px] flex items-center justify-center">
-                <div className="text-zinc-500">No genre data available</div>
+                <div className="text-[#8a8a7a]">No genre data available</div>
             </div>
         );
     }
@@ -55,7 +55,7 @@ export default function GenreBarChart({
                 layout="horizontal"
                 valueScale={{ type: 'linear' }}
                 indexScale={{ type: 'band', round: true }}
-                colors={['#8b5cf6', '#06b6d4']}
+                colors={['#c9a227', '#e07b4c']}
                 borderColor={{ from: 'color', modifiers: [['darker', 1.6]] }}
                 axisTop={null}
                 axisRight={null}
@@ -78,7 +78,7 @@ export default function GenreBarChart({
                 enableGridY={false}
                 labelSkipWidth={12}
                 labelSkipHeight={12}
-                labelTextColor="#ffffff"
+                labelTextColor="#0f0f0f"
                 legends={[
                     {
                         dataFrom: 'keys',
@@ -93,13 +93,13 @@ export default function GenreBarChart({
                         itemDirection: 'left-to-right',
                         itemOpacity: 0.85,
                         symbolSize: 12,
-                        itemTextColor: '#a1a1aa',
+                        itemTextColor: '#b8b8a8',
                         effects: [
                             {
                                 on: 'hover',
                                 style: {
                                     itemOpacity: 1,
-                                    itemTextColor: '#f4f4f5',
+                                    itemTextColor: '#f5f5f0',
                                 },
                             },
                         ],
@@ -112,24 +112,24 @@ export default function GenreBarChart({
                 tooltip={({ id, value, data: barData }) => (
                     <div
                         style={{
-                            background: 'rgba(24, 24, 27, 0.95)',
+                            background: 'rgba(26, 26, 26, 0.95)',
                             padding: '12px 16px',
-                            border: '1px solid rgba(63, 63, 70, 0.5)',
+                            border: '1px solid rgba(42, 42, 42, 0.8)',
                             borderRadius: '12px',
                             boxShadow: '0 4px 20px rgba(0, 0, 0, 0.5)',
                             backdropFilter: 'blur(8px)',
                         }}
                     >
-                        <strong style={{ color: '#f4f4f5' }}>
+                        <strong style={{ color: '#f5f5f0' }}>
                             {(barData as { fullName: string }).fullName}
                         </strong>
-                        <div style={{ marginTop: '8px', color: id === 'Movies' ? '#a78bfa' : '#22d3ee' }}>
+                        <div style={{ marginTop: '8px', color: id === 'Movies' ? '#c9a227' : '#e07b4c' }}>
                             {id}: <strong>{value}</strong>
                         </div>
-                        <div style={{ color: '#a1a1aa', marginTop: '4px' }}>
+                        <div style={{ color: '#b8b8a8', marginTop: '4px' }}>
                             Total: {(barData as { total: number }).total} titles
                         </div>
-                        <div style={{ color: '#71717a', marginTop: '8px', fontSize: '12px' }}>
+                        <div style={{ color: '#8a8a7a', marginTop: '8px', fontSize: '12px' }}>
                             Click to filter
                         </div>
                     </div>
@@ -138,34 +138,34 @@ export default function GenreBarChart({
                     background: 'transparent',
                     text: {
                         fontSize: 11,
-                        fill: '#a1a1aa',
+                        fill: '#b8b8a8',
                     },
                     axis: {
                         domain: {
                             line: {
-                                stroke: '#3f3f46',
+                                stroke: '#333333',
                                 strokeWidth: 1,
                             },
                         },
                         ticks: {
                             line: {
-                                stroke: '#3f3f46',
+                                stroke: '#333333',
                                 strokeWidth: 1,
                             },
                             text: {
-                                fill: '#a1a1aa',
+                                fill: '#b8b8a8',
                             },
                         },
                         legend: {
                             text: {
-                                fill: '#f4f4f5',
+                                fill: '#f5f5f0',
                                 fontSize: 12,
                             },
                         },
                     },
                     grid: {
                         line: {
-                            stroke: '#27272a',
+                            stroke: '#2a2a2a',
                             strokeWidth: 1,
                         },
                     },

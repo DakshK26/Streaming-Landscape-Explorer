@@ -11,26 +11,26 @@ interface GenreTrendChartProps {
     selectedGenre: string | null;
 }
 
-// Color palette for genre lines
+// Retro color palette for genre lines
 const genreColors: Record<string, string> = {
-    'Drama': '#8b5cf6',
-    'Comedy': '#06b6d4',
-    'Action & Adventure': '#ef4444',
-    'International': '#10b981',
-    'Documentary': '#f59e0b',
-    'Thriller': '#ec4899',
-    'Kids & Family': '#6366f1',
-    'Romance': '#f472b6',
-    'Horror': '#dc2626',
-    'Crime': '#14b8a6',
-    'Anime': '#a855f7',
-    'Sci-Fi & Fantasy': '#3b82f6',
-    'Independent': '#84cc16',
-    'Reality': '#f97316',
-    'Music & Musicals': '#fbbf24',
+    'Drama': '#c9a227',
+    'Comedy': '#7db88f',
+    'Action & Adventure': '#e07b4c',
+    'International': '#5ba3c0',
+    'Documentary': '#9b8ec4',
+    'Thriller': '#d4786c',
+    'Kids & Family': '#8fb8a8',
+    'Romance': '#c4a484',
+    'Horror': '#d4786c',
+    'Crime': '#e07b4c',
+    'Anime': '#e07b4c',
+    'Sci-Fi & Fantasy': '#5ba3c0',
+    'Independent': '#7db88f',
+    'Reality': '#c9a227',
+    'Music & Musicals': '#9b8ec4',
 };
 
-const defaultColor = '#71717a';
+const defaultColor = '#8a8a7a';
 
 export default function GenreTrendChart({
     data,
@@ -108,8 +108,8 @@ export default function GenreTrendChart({
         return (
             <div className="h-[400px] flex items-center justify-center">
                 <div className="flex flex-col items-center gap-3">
-                    <div className="w-10 h-10 border-3 border-[#8b5cf6] border-t-transparent rounded-full animate-spin" />
-                    <p className="text-[#71717a] text-sm">Loading trend data...</p>
+                    <div className="w-10 h-10 border-3 border-[#c9a227] border-t-transparent rounded-full animate-spin" />
+                    <p className="text-[#8a8a7a] text-sm">Loading trend data...</p>
                 </div>
             </div>
         );
@@ -118,7 +118,7 @@ export default function GenreTrendChart({
     if (!data || data.length === 0 || chartData.length === 0) {
         return (
             <div className="h-[400px] flex items-center justify-center">
-                <div className="text-[#71717a]">No trend data available</div>
+                <div className="text-[#8a8a7a]">No trend data available</div>
             </div>
         );
     }
@@ -160,8 +160,8 @@ export default function GenreTrendChart({
                 useMesh={true}
                 enableSlices="x"
                 sliceTooltip={({ slice }) => (
-                    <div className="bg-[#18181b] border border-[#27272a] rounded-xl px-4 py-3 shadow-2xl">
-                        <p className="text-white font-medium mb-2">
+                    <div className="bg-[#1a1a1a] border border-[#2a2a2a] rounded-xl px-4 py-3 shadow-2xl">
+                        <p className="text-[#f5f5f0] font-medium mb-2">
                             {slice.points[0].data.x}
                         </p>
                         <div className="space-y-1.5">
@@ -175,8 +175,8 @@ export default function GenreTrendChart({
                                                 className="w-2.5 h-2.5 rounded-full"
                                                 style={{ backgroundColor: seriesData?.color || point.color }}
                                             />
-                                            <span className="text-[#a1a1aa] flex-1">{point.seriesId}</span>
-                                            <span className="text-white font-medium">{point.data.yFormatted}</span>
+                                            <span className="text-[#b8b8a8] flex-1">{point.seriesId}</span>
+                                            <span className="text-[#f5f5f0] font-medium">{point.data.yFormatted}</span>
                                         </div>
                                     );
                                 })}
@@ -187,12 +187,12 @@ export default function GenreTrendChart({
                     background: 'transparent',
                     text: {
                         fontSize: 11,
-                        fill: '#a1a1aa',
+                        fill: '#b8b8a8',
                     },
                     axis: {
                         domain: {
                             line: {
-                                stroke: '#27272a',
+                                stroke: '#2a2a2a',
                                 strokeWidth: 1,
                             },
                         },
@@ -201,13 +201,13 @@ export default function GenreTrendChart({
                                 stroke: 'transparent',
                             },
                             text: {
-                                fill: '#71717a',
+                                fill: '#8a8a7a',
                                 fontSize: 11,
                             },
                         },
                         legend: {
                             text: {
-                                fill: '#a1a1aa',
+                                fill: '#b8b8a8',
                                 fontSize: 12,
                                 fontWeight: 500,
                             },
@@ -215,14 +215,14 @@ export default function GenreTrendChart({
                     },
                     grid: {
                         line: {
-                            stroke: '#27272a',
+                            stroke: '#2a2a2a',
                             strokeWidth: 1,
                             strokeDasharray: '4 4',
                         },
                     },
                     crosshair: {
                         line: {
-                            stroke: '#8b5cf6',
+                            stroke: '#c9a227',
                             strokeWidth: 1,
                             strokeOpacity: 0.5,
                         },
@@ -242,13 +242,13 @@ export default function GenreTrendChart({
                         itemOpacity: 0.75,
                         symbolSize: 8,
                         symbolShape: 'circle',
-                        itemTextColor: '#71717a',
+                        itemTextColor: '#8a8a7a',
                         effects: [
                             {
                                 on: 'hover',
                                 style: {
                                     itemOpacity: 1,
-                                    itemTextColor: '#e4e4e7',
+                                    itemTextColor: '#f5f5f0',
                                 },
                             },
                         ],

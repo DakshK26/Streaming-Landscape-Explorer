@@ -16,7 +16,7 @@ export default function TypeFilter() {
 
     return (
         <div className="space-y-3">
-            <h3 className="text-sm font-medium text-zinc-400">Content Type</h3>
+            <h3 className="text-sm font-medium text-[#b8b8a8]">Content Type</h3>
             <div className="flex gap-2">
                 <button
                     onClick={() => toggleType('Movie')}
@@ -24,8 +24,8 @@ export default function TypeFilter() {
             flex-1 py-2.5 px-4 rounded-xl text-sm font-medium
             transition-all duration-300 border
             ${filters.types.includes('Movie')
-                            ? 'bg-gradient-to-r from-violet-600 to-violet-500 text-white border-violet-500/50 shadow-lg shadow-violet-500/25'
-                            : 'bg-zinc-900/50 text-zinc-400 hover:bg-zinc-800/70 border-zinc-700/50 hover:border-zinc-600/50'
+                            ? 'bg-gradient-to-r from-[#c9a227] to-[#b8922a] text-[#0f0f0f] border-[#c9a227]/50 shadow-lg shadow-[#c9a227]/20'
+                            : 'bg-[#1a1a1a]/50 text-[#b8b8a8] hover:bg-[#252525]/70 border-[#2a2a2a] hover:border-[#404040]'
                         }
           `}
                 >
@@ -42,8 +42,8 @@ export default function TypeFilter() {
             flex-1 py-2.5 px-4 rounded-xl text-sm font-medium
             transition-all duration-300 border
             ${filters.types.includes('TV Show')
-                            ? 'bg-gradient-to-r from-cyan-600 to-cyan-500 text-white border-cyan-500/50 shadow-lg shadow-cyan-500/25'
-                            : 'bg-zinc-900/50 text-zinc-400 hover:bg-zinc-800/70 border-zinc-700/50 hover:border-zinc-600/50'
+                            ? 'bg-gradient-to-r from-[#e07b4c] to-[#d06a3c] text-[#0f0f0f] border-[#e07b4c]/50 shadow-lg shadow-[#e07b4c]/20'
+                            : 'bg-[#1a1a1a]/50 text-[#b8b8a8] hover:bg-[#252525]/70 border-[#2a2a2a] hover:border-[#404040]'
                         }
           `}
                 >

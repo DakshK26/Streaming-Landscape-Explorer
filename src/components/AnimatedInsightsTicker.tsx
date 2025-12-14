@@ -15,6 +15,7 @@ interface Insight {
     label: string;
     value: string;
     color: string;
+    borderColor: string;
 }
 
 export default function AnimatedInsightsTicker({
@@ -27,7 +28,7 @@ export default function AnimatedInsightsTicker({
     const [progressKey, setProgressKey] = useState(0);
     const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
-    // Generate insights from the data
+    // Generate insights from the data - with retro color palette
     const insights = useMemo<Insight[]>(() => {
         const result: Insight[] = [];
 
@@ -39,7 +40,8 @@ export default function AnimatedInsightsTicker({
                 icon: '🎭',
                 label: 'Top Genre',
                 value: genres[0].name,
-                color: 'from-violet-500 to-purple-500',
+                color: 'from-[#c9a227] to-[#b8922a]',
+                borderColor: 'border-[#c9a227]/30',
             });
         }
 
@@ -52,7 +54,8 @@ export default function AnimatedInsightsTicker({
                 icon: '📈',
                 label: 'Peak Production Year',
                 value: `${peakYear.year} with ${(peakYear.movies + peakYear.tvShows).toLocaleString()} titles`,
-                color: 'from-cyan-500 to-blue-500',
+                color: 'from-[#e07b4c] to-[#d06a3c]',
+                borderColor: 'border-[#e07b4c]/30',
             });
         }
 
@@ -62,7 +65,8 @@ export default function AnimatedInsightsTicker({
                 icon: '🌍',
                 label: 'Top Producer',
                 value: `${countries[0].country} (${countries[0].count.toLocaleString()} titles)`,
-                color: 'from-emerald-500 to-teal-500',
+                color: 'from-[#7db88f] to-[#6aa87f]',
+                borderColor: 'border-[#7db88f]/30',
             });
         }
 
@@ -73,7 +77,8 @@ export default function AnimatedInsightsTicker({
                 icon: '🎬',
                 label: 'Movie to TV Ratio',
                 value: `${ratio}:1`,
-                color: 'from-orange-500 to-amber-500',
+                color: 'from-[#d4786c] to-[#c4685c]',
+                borderColor: 'border-[#d4786c]/30',
             });
         }
 
@@ -84,7 +89,8 @@ export default function AnimatedInsightsTicker({
                 icon: '📅',
                 label: 'Catalog Spans',
                 value: `${span} years (${summary.yearRange[0]} - ${summary.yearRange[1]})`,
-                color: 'from-pink-500 to-rose-500',
+                color: 'from-[#9b8ec4] to-[#8b7eb4]',
+                borderColor: 'border-[#9b8ec4]/30',
             });
         }
 
@@ -99,7 +105,8 @@ export default function AnimatedInsightsTicker({
                     icon: '⚡',
                     label: 'Avg Titles/Year (2010s+)',
                     value: avgPerYear.toLocaleString(),
-                    color: 'from-indigo-500 to-violet-500',
+                    color: 'from-[#5ba3c0] to-[#4b93b0]',
+                    borderColor: 'border-[#5ba3c0]/30',
                 });
             }
         }
@@ -115,7 +122,8 @@ export default function AnimatedInsightsTicker({
                     icon: '🌐',
                     label: 'International Content',
                     value: `${percentage}% of catalog`,
-                    color: 'from-teal-500 to-cyan-500',
+                    color: 'from-[#c4a484] to-[#b49474]',
+                    borderColor: 'border-[#c4a484]/30',
                 });
             }
         }
@@ -162,16 +170,16 @@ export default function AnimatedInsightsTicker({
 
     return (
         <div className="relative w-full max-w-2xl mx-auto mb-10">
-            {/* Glowing background effect */}
+            {/* Subtle glow effect */}
             <div
-                className={`absolute inset-0 bg-gradient-to-r ${currentInsight.color} opacity-20 blur-2xl rounded-full`}
+                className={`absolute inset-0 bg-gradient-to-r ${currentInsight.color} opacity-10 blur-3xl rounded-full`}
                 style={{ transition: 'background 0.8s ease-in-out' }}
             />
 
-            {/* Main container */}
-            <div className="relative bg-zinc-900/80 backdrop-blur-xl border border-zinc-800/80 rounded-2xl p-1 overflow-hidden">
+            {/* Main container - retro style */}
+            <div className={`relative bg-[#1a1a1a]/90 backdrop-blur-xl border ${currentInsight.borderColor} rounded-xl p-1 overflow-hidden transition-all duration-500`}>
                 {/* Progress bar - using key to restart animation */}
-                <div className="absolute top-0 left-0 right-0 h-0.5 bg-zinc-800 rounded-t-2xl overflow-hidden">
+                <div className="absolute top-0 left-0 right-0 h-0.5 bg-[#252525] rounded-t-xl overflow-hidden">
                     <div
                         key={progressKey}
                         className={`h-full bg-gradient-to-r ${currentInsight.color}`}
@@ -199,17 +207,17 @@ export default function AnimatedInsightsTicker({
                             >
                                 {/* Icon with gradient background */}
                                 <div
-                                    className={`flex-shrink-0 w-12 h-12 rounded-xl bg-gradient-to-br ${insight.color} flex items-center justify-center text-2xl shadow-lg`}
+                                    className={`flex-shrink-0 w-12 h-12 rounded-lg bg-gradient-to-br ${insight.color} flex items-center justify-center text-2xl shadow-lg`}
                                 >
                                     {insight.icon}
                                 </div>
 
                                 {/* Text content */}
                                 <div className="flex-1 min-w-0">
-                                    <p className="text-xs font-medium text-zinc-500 uppercase tracking-wider">
+                                    <p className="text-xs font-medium text-[#8a8a7a] uppercase tracking-wider">
                                         {insight.label}
                                     </p>
-                                    <p className="text-lg font-semibold text-white truncate">
+                                    <p className="text-lg font-medium text-[#f5f5f0] truncate">
                                         {insight.value}
                                     </p>
                                 </div>
@@ -218,34 +226,24 @@ export default function AnimatedInsightsTicker({
                     </div>
 
                     {/* Navigation dots */}
-                    <div className="flex items-center gap-1.5 ml-4">
+                    <div className="flex items-center gap-2 ml-4">
                         {insights.map((insight, idx) => (
                             <button
                                 key={idx}
                                 onClick={() => goToInsight(idx)}
                                 className={`w-2 h-2 rounded-full transition-all duration-300 ${idx === currentIndex
                                     ? `bg-gradient-to-r ${insight.color} scale-125`
-                                    : 'bg-zinc-700 hover:bg-zinc-600'
+                                    : 'bg-[#404040] hover:bg-[#5a5a5a]'
                                     }`}
                                 aria-label={`Go to insight ${idx + 1}`}
                             />
                         ))}
                     </div>
                 </div>
-
-                {/* Decorative corner accents - pointer-events-none so they don't block clicks */}
-                <div
-                    className={`absolute top-0 left-0 w-16 h-16 bg-gradient-to-br ${currentInsight.color} opacity-10 rounded-tl-2xl pointer-events-none`}
-                    style={{ transition: 'background 0.5s ease-in-out' }}
-                />
-                <div
-                    className={`absolute bottom-0 right-0 w-16 h-16 bg-gradient-to-tl ${currentInsight.color} opacity-10 rounded-br-2xl pointer-events-none`}
-                    style={{ transition: 'background 0.5s ease-in-out' }}
-                />
             </div>
 
             {/* Keyboard hint */}
-            <p className="text-center text-xs text-zinc-600 mt-3">
+            <p className="text-center text-xs text-[#5a5a4a] mt-3">
                 Click dots to explore • Auto-rotates every 5s
             </p>
         </div>

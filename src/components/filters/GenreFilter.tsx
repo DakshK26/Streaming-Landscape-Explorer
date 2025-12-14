@@ -11,29 +11,29 @@ interface GenreFilterProps {
     maxVisible?: number;
 }
 
-// Color palette for consolidated genres
+// Retro color palette for consolidated genres
 const genreColors: Record<string, string> = {
-    'Drama': '#8b5cf6',
-    'Comedy': '#10b981',
-    'International': '#06b6d4',
-    'Action & Adventure': '#f59e0b',
-    'Documentary': '#ec4899',
-    'Kids & Family': '#14b8a6',
-    'Horror': '#ef4444',
-    'Romance': '#f472b6',
-    'Thriller': '#eab308',
-    'Sci-Fi & Fantasy': '#6366f1',
-    'Music & Musicals': '#a855f7',
-    'Anime': '#22d3ee',
-    'Classic & Cult': '#84cc16',
-    'Stand-Up & Talk': '#fb923c',
-    'LGBTQ': '#d946ef',
-    'Sports': '#34d399',
-    'Independent': '#60a5fa',
-    'Crime': '#ef4444',
-    'Reality': '#fb923c',
-    'Teen': '#c084fc',
-    'Faith & Spirituality': '#fbbf24',
+    'Drama': '#c9a227',
+    'Comedy': '#7db88f',
+    'International': '#5ba3c0',
+    'Action & Adventure': '#e07b4c',
+    'Documentary': '#9b8ec4',
+    'Kids & Family': '#8fb8a8',
+    'Horror': '#d4786c',
+    'Romance': '#c4a484',
+    'Thriller': '#d4b13a',
+    'Sci-Fi & Fantasy': '#5ba3c0',
+    'Music & Musicals': '#9b8ec4',
+    'Anime': '#e07b4c',
+    'Classic & Cult': '#c9a227',
+    'Stand-Up & Talk': '#7db88f',
+    'LGBTQ': '#9b8ec4',
+    'Sports': '#7db88f',
+    'Independent': '#5ba3c0',
+    'Crime': '#d4786c',
+    'Reality': '#e07b4c',
+    'Teen': '#9b8ec4',
+    'Faith & Spirituality': '#c9a227',
 };
 
 export default function GenreFilter({ genres, loading, maxVisible = 8 }: GenreFilterProps) {
@@ -77,11 +77,11 @@ export default function GenreFilter({ genres, loading, maxVisible = 8 }: GenreFi
         <>
             <div className="space-y-3">
                 <div className="flex items-center justify-between">
-                    <h3 className="text-sm font-medium text-[#a1a1aa]">Filter by Genre</h3>
+                    <h3 className="text-sm font-medium text-[#b8b8a8]">Filter by Genre</h3>
                     {filters.genres.length > 0 && (
                         <button
                             onClick={() => updateFilter('genres', [])}
-                            className="text-xs text-[#8b5cf6] hover:text-[#a78bfa] font-medium"
+                            className="text-xs text-[#c9a227] hover:text-[#d4b13a] font-medium"
                         >
                             Clear ({filters.genres.length})
                         </button>
@@ -101,7 +101,7 @@ export default function GenreFilter({ genres, loading, maxVisible = 8 }: GenreFi
                     {remainingCount > 0 && (
                         <button
                             onClick={() => setIsModalOpen(true)}
-                            className="chip hover:border-[#8b5cf6] hover:text-[#8b5cf6]"
+                            className="chip hover:border-[#c9a227] hover:text-[#c9a227]"
                         >
                             +{remainingCount} more
                         </button>
@@ -109,7 +109,7 @@ export default function GenreFilter({ genres, loading, maxVisible = 8 }: GenreFi
                 </div>
             </div>
 
-            {/* Genre Modal */}
+            {/* Genre Modal - Retro Style */}
             {isModalOpen && (
                 <div
                     className="fixed inset-0 z-50 flex items-center justify-center p-4"
@@ -117,16 +117,16 @@ export default function GenreFilter({ genres, loading, maxVisible = 8 }: GenreFi
                 >
                     <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" />
                     <div
-                        className="relative bg-[#18181b] border border-[#27272a] rounded-2xl w-full max-w-2xl max-h-[80vh] overflow-hidden shadow-2xl"
+                        className="relative bg-[#1a1a1a] border border-[#2a2a2a] rounded-2xl w-full max-w-2xl max-h-[80vh] overflow-hidden shadow-2xl"
                         onClick={(e) => e.stopPropagation()}
                     >
                         {/* Header */}
-                        <div className="p-6 border-b border-[#27272a]">
+                        <div className="p-6 border-b border-[#2a2a2a]">
                             <div className="flex items-center justify-between mb-4">
-                                <h2 className="text-xl font-semibold text-white">All Genres</h2>
+                                <h2 className="text-xl font-[family-name:var(--font-playfair)] italic text-[#f5f5f0]">All Genres</h2>
                                 <button
                                     onClick={() => setIsModalOpen(false)}
-                                    className="text-[#71717a] hover:text-white text-2xl leading-none"
+                                    className="text-[#8a8a7a] hover:text-[#f5f5f0] text-2xl leading-none"
                                 >
                                     ×
                                 </button>
@@ -136,7 +136,7 @@ export default function GenreFilter({ genres, loading, maxVisible = 8 }: GenreFi
                                 placeholder="Search genres..."
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
-                                className="w-full px-4 py-3 bg-[#27272a] border border-[#3f3f46] rounded-xl text-white placeholder-[#71717a] focus:outline-none focus:border-[#8b5cf6]"
+                                className="w-full px-4 py-3 bg-[#252525] border border-[#333333] rounded-xl text-[#f5f5f0] placeholder-[#5a5a4a] focus:outline-none focus:border-[#c9a227]"
                                 autoFocus
                             />
                         </div>
@@ -156,15 +156,15 @@ export default function GenreFilter({ genres, loading, maxVisible = 8 }: GenreFi
                                 ))}
                             </div>
                             {filteredGenres.length === 0 && (
-                                <p className="text-center text-[#71717a] py-8">
-                                    No genres found matching "{searchQuery}"
+                                <p className="text-center text-[#8a8a7a] py-8">
+                                    No genres found matching &ldquo;{searchQuery}&rdquo;
                                 </p>
                             )}
                         </div>
 
                         {/* Footer */}
-                        <div className="p-4 border-t border-[#27272a] flex justify-between items-center">
-                            <span className="text-sm text-[#71717a]">
+                        <div className="p-4 border-t border-[#2a2a2a] flex justify-between items-center">
+                            <span className="text-sm text-[#8a8a7a]">
                                 {filters.genres.length} selected
                             </span>
                             <button

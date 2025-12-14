@@ -19,8 +19,8 @@ export default function TimelineChart({ data, loading }: TimelineChartProps) {
         return (
             <div className="h-[400px] flex items-center justify-center">
                 <div className="flex flex-col items-center gap-3">
-                    <div className="w-10 h-10 border-3 border-[#8b5cf6] border-t-transparent rounded-full animate-spin" />
-                    <p className="text-[#71717a] text-sm">Loading timeline...</p>
+                    <div className="w-10 h-10 border-3 border-[#c9a227] border-t-transparent rounded-full animate-spin" />
+                    <p className="text-[#8a8a7a] text-sm">Loading timeline...</p>
                 </div>
             </div>
         );
@@ -29,21 +29,21 @@ export default function TimelineChart({ data, loading }: TimelineChartProps) {
     if (!data || data.length === 0) {
         return (
             <div className="h-[400px] flex items-center justify-center">
-                <div className="text-[#71717a]">No data available for the selected filters</div>
+                <div className="text-[#8a8a7a]">No data available for the selected filters</div>
             </div>
         );
     }
 
-    // Transform data for Nivo
+    // Transform data for Nivo - using retro colors
     const chartData: ChartSerie[] = [
         {
             id: 'Movies',
-            color: '#8b5cf6',
+            color: '#c9a227',
             data: data.map((d) => ({ x: d.year, y: d.movies })),
         },
         {
             id: 'TV Shows',
-            color: '#06b6d4',
+            color: '#e07b4c',
             data: data.map((d) => ({ x: d.year, y: d.tvShows })),
         },
     ];
@@ -82,7 +82,7 @@ export default function TimelineChart({ data, loading }: TimelineChartProps) {
                     legendOffset: -50,
                     legendPosition: 'middle',
                 }}
-                colors={['#8b5cf6', '#06b6d4']}
+                colors={['#c9a227', '#e07b4c']}
                 lineWidth={3}
                 pointSize={8}
                 pointColor={{ theme: 'background' }}
@@ -94,8 +94,8 @@ export default function TimelineChart({ data, loading }: TimelineChartProps) {
                 useMesh={true}
                 enableSlices="x"
                 sliceTooltip={({ slice }) => (
-                    <div className="bg-[#18181b] border border-[#27272a] rounded-xl px-4 py-3 shadow-2xl">
-                        <p className="font-semibold text-white mb-2">
+                    <div className="bg-[#1a1a1a] border border-[#2a2a2a] rounded-xl px-4 py-3 shadow-2xl">
+                        <p className="font-semibold text-[#f5f5f0] mb-2">
                             Year: {slice.points[0].data.xFormatted}
                         </p>
                         <div className="space-y-1">
@@ -108,8 +108,8 @@ export default function TimelineChart({ data, loading }: TimelineChartProps) {
                                         className="w-2.5 h-2.5 rounded-full"
                                         style={{ backgroundColor: point.seriesColor }}
                                     />
-                                    <span className="text-[#a1a1aa]">
-                                        {point.seriesId}: <span className="text-white font-medium">{point.data.yFormatted}</span>
+                                    <span className="text-[#b8b8a8]">
+                                        {point.seriesId}: <span className="text-[#f5f5f0] font-medium">{point.data.yFormatted}</span>
                                     </span>
                                 </div>
                             ))}
@@ -130,12 +130,12 @@ export default function TimelineChart({ data, loading }: TimelineChartProps) {
                         itemOpacity: 0.85,
                         symbolSize: 10,
                         symbolShape: 'circle',
-                        itemTextColor: '#71717a',
+                        itemTextColor: '#8a8a7a',
                         effects: [
                             {
                                 on: 'hover',
                                 style: {
-                                    itemTextColor: '#fafafa',
+                                    itemTextColor: '#f5f5f0',
                                     itemOpacity: 1,
                                 },
                             },
@@ -146,12 +146,12 @@ export default function TimelineChart({ data, loading }: TimelineChartProps) {
                     background: 'transparent',
                     text: {
                         fontSize: 11,
-                        fill: '#71717a',
+                        fill: '#8a8a7a',
                     },
                     axis: {
                         domain: {
                             line: {
-                                stroke: '#27272a',
+                                stroke: '#2a2a2a',
                                 strokeWidth: 1,
                             },
                         },
@@ -160,13 +160,13 @@ export default function TimelineChart({ data, loading }: TimelineChartProps) {
                                 stroke: 'transparent',
                             },
                             text: {
-                                fill: '#71717a',
+                                fill: '#8a8a7a',
                                 fontSize: 11,
                             },
                         },
                         legend: {
                             text: {
-                                fill: '#a1a1aa',
+                                fill: '#b8b8a8',
                                 fontSize: 12,
                                 fontWeight: 500,
                             },
@@ -174,14 +174,14 @@ export default function TimelineChart({ data, loading }: TimelineChartProps) {
                     },
                     grid: {
                         line: {
-                            stroke: '#27272a',
+                            stroke: '#2a2a2a',
                             strokeWidth: 1,
                             strokeDasharray: '4 4',
                         },
                     },
                     crosshair: {
                         line: {
-                            stroke: '#8b5cf6',
+                            stroke: '#c9a227',
                             strokeWidth: 1,
                             strokeOpacity: 0.5,
                         },
