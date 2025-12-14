@@ -37,10 +37,9 @@ export const metadata: Metadata = {
   description: "Explore how movies and shows vary by genre, country, language, and more. An interactive data visualization experience.",
   keywords: ["Netflix", "streaming", "movies", "TV shows", "data visualization", "analytics"],
   icons: {
-    icon: [
-      { url: '/favicon.svg', type: 'image/svg+xml' },
-      { url: '/favicon.ico', sizes: 'any' }
-    ],
+    icon: '/favicon.svg',
+    shortcut: '/favicon.svg',
+    apple: '/favicon.svg',
   },
 };
 
