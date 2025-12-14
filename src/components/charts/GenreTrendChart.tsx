@@ -127,7 +127,7 @@ export default function GenreTrendChart({
         <div className="h-[400px]">
             <ResponsiveLine
                 data={chartData}
-                margin={{ top: 20, right: 20, bottom: 60, left: 60 }}
+                margin={{ top: 20, right: 20, bottom: selectedGenre ? 60 : 90, left: 60 }}
                 xScale={{ type: 'linear', min: 'auto', max: 'auto' }}
                 yScale={{ type: 'linear', min: 0, max: 'auto', stacked: false }}
                 curve="monotoneX"
@@ -139,7 +139,7 @@ export default function GenreTrendChart({
                     tickRotation: 0,
                     legend: 'Year',
                     legendPosition: 'middle',
-                    legendOffset: 45,
+                    legendOffset: selectedGenre ? 45 : 35,
                     tickValues: 5,
                     format: (value) => String(Math.round(Number(value))),
                 }}
@@ -234,11 +234,11 @@ export default function GenreTrendChart({
                         direction: 'row',
                         justify: false,
                         translateX: 0,
-                        translateY: 55,
-                        itemsSpacing: 16,
+                        translateY: 75,
+                        itemsSpacing: 8,
                         itemDirection: 'left-to-right',
-                        itemWidth: 100,
-                        itemHeight: 12,
+                        itemWidth: 140,
+                        itemHeight: 16,
                         itemOpacity: 0.75,
                         symbolSize: 8,
                         symbolShape: 'circle',
