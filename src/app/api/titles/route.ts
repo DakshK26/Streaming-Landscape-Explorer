@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
+import { getOriginalGenres } from '@/lib/genreConsolidation';
 import type { Title } from '@/types';
 
 export async function GET(request: Request) {
@@ -14,6 +15,8 @@ export async function GET(request: Request) {
         const limit = parseInt(searchParams.get('limit') || '500');
         const offset = parseInt(searchParams.get('offset') || '0');
 
+        const expandedGenres = genres.flatMap(g => getOriginalGenres(g));
+
         // Build where clause
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const whereClause: any = {};
@@ -27,10 +30,10 @@ export async function GET(request: Request) {
         if (types.length > 0) {
             whereClause.type = { in: types };
         }
-        if (genres.length > 0) {
+        if (expandedGenres.length > 0) {
             whereClause.genres = {
                 some: {
-                    genre: { name: { in: genres } },
+                    genre: { name: { in: expandedGenres } },
                 },
             };
         }

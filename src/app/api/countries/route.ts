@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
+import { getOriginalGenres } from '@/lib/genreConsolidation';
 import type { CountryData } from '@/types';
 
 interface TitleResult {
@@ -24,6 +25,8 @@ export async function GET(request: Request) {
         const yearMax = parseInt(searchParams.get('yearMax') || '9999') || undefined;
         const countryMode = searchParams.get('countryMode') || 'all';
 
+        const expandedGenres = genres.flatMap(g => getOriginalGenres(g));
+
         // Build base filter for titles
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const titleFilter: any = {};
@@ -34,10 +37,10 @@ export async function GET(request: Request) {
         if (yearMax) {
             titleFilter.releaseYear = { ...titleFilter.releaseYear, lte: yearMax };
         }
-        if (genres.length > 0) {
+        if (expandedGenres.length > 0) {
             titleFilter.genres = {
                 some: {
-                    genre: { name: { in: genres } },
+                    genre: { name: { in: expandedGenres } },
                 },
             };
         }

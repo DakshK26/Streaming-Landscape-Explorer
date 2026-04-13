@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
+import { getOriginalGenres } from '@/lib/genreConsolidation';
 import type { ScatterDataPoint } from '@/types';
 
 function parseDuration(duration: string | null, type: string): number | null {
@@ -28,6 +29,8 @@ export async function GET(request: Request) {
         const countryMode = searchParams.get('countryMode') || 'all';
         const limit = parseInt(searchParams.get('limit') || '1000');
 
+        const expandedGenres = genres.flatMap(g => getOriginalGenres(g));
+
         // Build where clause
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const whereClause: any = {};
@@ -41,10 +44,10 @@ export async function GET(request: Request) {
         if (types.length > 0) {
             whereClause.type = { in: types };
         }
-        if (genres.length > 0) {
+        if (expandedGenres.length > 0) {
             whereClause.genres = {
                 some: {
-                    genre: { name: { in: genres } },
+                    genre: { name: { in: expandedGenres } },
                 },
             };
         }

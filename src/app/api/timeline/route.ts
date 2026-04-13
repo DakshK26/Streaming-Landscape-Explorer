@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
+import { getOriginalGenres } from '@/lib/genreConsolidation';
 import type { TimelineDataPoint } from '@/types';
 
 export async function GET(request: Request) {
@@ -9,14 +10,16 @@ export async function GET(request: Request) {
         const countries = searchParams.get('countries')?.split(',').filter(Boolean) || [];
         const countryMode = searchParams.get('countryMode') || 'all';
 
+        const expandedGenres = genres.flatMap(g => getOriginalGenres(g));
+
         // Build where clause for filtering
         const whereClause: Record<string, unknown> = {};
 
-        if (genres.length > 0) {
+        if (expandedGenres.length > 0) {
             whereClause.genres = {
                 some: {
                     genre: {
-                        name: { in: genres }
+                        name: { in: expandedGenres }
                     }
                 }
             };
