@@ -1,32 +1,41 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 import type { GenreStats } from '@/types';
-import { consolidateGenreStats } from '@/lib/genreConsolidation';
+import { getOriginalGenres, getConsolidatedGenre } from '@/lib/genreConsolidation';
 
 export async function GET(request: Request) {
     try {
         const { searchParams } = new URL(request.url);
+        const selectedGenres = searchParams.get('genres')?.split(',').filter(Boolean) || [];
         const countries = searchParams.get('countries')?.split(',').filter(Boolean) || [];
         const types = searchParams.get('types')?.split(',').filter(Boolean) || [];
         const yearMin = parseInt(searchParams.get('yearMin') || '0') || undefined;
         const yearMax = parseInt(searchParams.get('yearMax') || '9999') || undefined;
         const countryMode = searchParams.get('countryMode') || 'all';
 
-        // Build base filter for titles
+        const expandedGenres = selectedGenres.flatMap(g => getOriginalGenres(g));
+
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const titleFilter: any = {};
+        const whereClause: any = {};
 
         if (yearMin) {
-            titleFilter.releaseYear = { ...titleFilter.releaseYear, gte: yearMin };
+            whereClause.releaseYear = { ...whereClause.releaseYear, gte: yearMin };
         }
         if (yearMax) {
-            titleFilter.releaseYear = { ...titleFilter.releaseYear, lte: yearMax };
+            whereClause.releaseYear = { ...whereClause.releaseYear, lte: yearMax };
         }
         if (types.length > 0) {
-            titleFilter.type = { in: types };
+            whereClause.type = { in: types };
+        }
+        if (expandedGenres.length > 0) {
+            whereClause.genres = {
+                some: {
+                    genre: { name: { in: expandedGenres } },
+                },
+            };
         }
         if (countries.length > 0) {
-            titleFilter.countries = {
+            whereClause.countries = {
                 some: {
                     country: { name: { in: countries } },
                     ...(countryMode === 'primary' ? { isPrimary: true } : {}),
@@ -34,60 +43,60 @@ export async function GET(request: Request) {
             };
         }
 
-        // Get all genres
-        const genres = await prisma.genre.findMany({
+        // Query titles with their genres so we can count each title once per
+        // consolidated genre (avoids double-counting when a title has multiple
+        // raw genres in the same group, e.g. "International Movies" + "Korean TV Shows")
+        const titles = await prisma.title.findMany({
+            where: whereClause,
             select: {
-                name: true,
-                titles: {
-                    where: { title: titleFilter },
+                type: true,
+                releaseYear: true,
+                genres: {
                     select: {
-                        title: {
-                            select: {
-                                type: true,
-                                releaseYear: true,
-                            },
-                        },
+                        genre: { select: { name: true } },
                     },
                 },
             },
         });
 
-        interface TitleData {
+        interface TitleRow {
             type: string;
             releaseYear: number;
+            genres: { genre: { name: string } }[];
         }
 
-        interface GenreData {
-            name: string;
-            titles: { title: TitleData }[];
+        const genreMap = new Map<string, { count: number; movieCount: number; tvShowCount: number; yearSum: number }>();
+
+        for (const title of titles as TitleRow[]) {
+            // Deduplicate: a title with "International Movies" + "Korean TV Shows"
+            // should count only once for the "International" consolidated genre
+            const consolidated = new Set<string>();
+            for (const g of title.genres) {
+                consolidated.add(getConsolidatedGenre(g.genre.name));
+            }
+
+            for (const genre of consolidated) {
+                const stats = genreMap.get(genre) || { count: 0, movieCount: 0, tvShowCount: 0, yearSum: 0 };
+                stats.count++;
+                if (title.type === 'Movie') stats.movieCount++;
+                else stats.tvShowCount++;
+                stats.yearSum += title.releaseYear;
+                genreMap.set(genre, stats);
+            }
         }
 
-        const genreStats: GenreStats[] = (genres as GenreData[]).map((genre) => {
-            const titles = genre.titles.map((t) => t.title);
-            const movieCount = titles.filter((t) => t.type === 'Movie').length;
-            const tvShowCount = titles.filter((t) => t.type === 'TV Show').length;
-            const avgYear = titles.length > 0
-                ? Math.round(titles.reduce((sum: number, t) => sum + t.releaseYear, 0) / titles.length)
-                : 0;
-
-            return {
-                name: genre.name,
-                count: titles.length,
-                avgYear,
-                movieCount,
-                tvShowCount,
-            };
-        });
-
-        // Sort by count descending and filter out empty genres
-        const sortedStats = genreStats
-            .filter((g) => g.count > 0)
+        const genreStats: GenreStats[] = Array.from(genreMap.entries())
+            .map(([name, stats]) => ({
+                name,
+                count: stats.count,
+                avgYear: stats.count > 0 ? Math.round(stats.yearSum / stats.count) : 0,
+                movieCount: stats.movieCount,
+                tvShowCount: stats.tvShowCount,
+            }))
+            .filter(g => g.count > 0)
             .sort((a, b) => b.count - a.count);
 
-        // Consolidate genres (merge TV/Movie variants)
-        const consolidatedStats = consolidateGenreStats(sortedStats);
-
-        return NextResponse.json(consolidatedStats);
+        return NextResponse.json(genreStats);
     } catch (error) {
         console.error('Error fetching genres:', error);
         return NextResponse.json(
