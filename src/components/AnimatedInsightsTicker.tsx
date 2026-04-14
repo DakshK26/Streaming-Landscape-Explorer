@@ -166,7 +166,8 @@ export default function AnimatedInsightsTicker({
         return null;
     }
 
-    const currentInsight = insights[currentIndex];
+    const safeIndex = currentIndex % insights.length;
+    const currentInsight = insights[safeIndex];
 
     return (
         <div className="relative w-full max-w-2xl mx-auto mb-10">
@@ -199,10 +200,10 @@ export default function AnimatedInsightsTicker({
                                 key={idx}
                                 className="absolute inset-0 flex items-center gap-4"
                                 style={{
-                                    opacity: idx === currentIndex ? 1 : 0,
-                                    transform: idx === currentIndex ? 'translateY(0)' : 'translateY(10px)',
+                                    opacity: idx === safeIndex ? 1 : 0,
+                                    transform: idx === safeIndex ? 'translateY(0)' : 'translateY(10px)',
                                     transition: 'opacity 0.5s ease-out, transform 0.5s ease-out',
-                                    pointerEvents: idx === currentIndex ? 'auto' : 'none',
+                                    pointerEvents: idx === safeIndex ? 'auto' : 'none',
                                 }}
                             >
                                 {/* Icon with gradient background */}
@@ -231,7 +232,7 @@ export default function AnimatedInsightsTicker({
                             <button
                                 key={idx}
                                 onClick={() => goToInsight(idx)}
-                                className={`w-2 h-2 rounded-full transition-all duration-300 ${idx === currentIndex
+                                className={`w-2 h-2 rounded-full transition-all duration-300 ${idx === safeIndex
                                     ? `bg-gradient-to-r ${insight.color} scale-125`
                                     : 'bg-[#404040] hover:bg-[#5a5a5a]'
                                     }`}

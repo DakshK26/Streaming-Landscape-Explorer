@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 
 interface UseFetchOptions {
     enabled?: boolean;
@@ -19,8 +19,9 @@ export function useFetch<T>(
     const [data, setData] = useState<T | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<Error | null>(null);
+    const abortControllerRef = useRef<AbortController | null>(null);
 
-    const fetchData = useCallback(async () => {
+    const fetchData = useCallback(async (signal?: AbortSignal) => {
         if (!enabled) {
             setLoading(false);
             return;
@@ -30,24 +31,51 @@ export function useFetch<T>(
         setError(null);
 
         try {
-            const response = await fetch(url);
+            const response = await fetch(url, { signal });
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
             const result = await response.json();
-            setData(result);
+            if (!signal?.aborted) {
+                setData(result);
+            }
         } catch (err) {
-            setError(err instanceof Error ? err : new Error('An error occurred'));
+            if (err instanceof DOMException && err.name === 'AbortError') return;
+            if (!signal?.aborted) {
+                setError(err instanceof Error ? err : new Error('An error occurred'));
+            }
         } finally {
-            setLoading(false);
+            if (!signal?.aborted) {
+                setLoading(false);
+            }
         }
     }, [url, enabled]);
 
     useEffect(() => {
-        fetchData();
+        if (abortControllerRef.current) {
+            abortControllerRef.current.abort();
+        }
+
+        const controller = new AbortController();
+        abortControllerRef.current = controller;
+
+        fetchData(controller.signal);
+
+        return () => {
+            controller.abort();
+        };
     }, [fetchData]);
 
-    return { data, loading, error, refetch: fetchData };
+    const refetch = useCallback(() => {
+        if (abortControllerRef.current) {
+            abortControllerRef.current.abort();
+        }
+        const controller = new AbortController();
+        abortControllerRef.current = controller;
+        fetchData(controller.signal);
+    }, [fetchData]);
+
+    return { data, loading, error, refetch };
 }
 
 // Debounce hook for filter changes

@@ -2,7 +2,7 @@
 
 import { useFetch } from '@/hooks/useFetch';
 import { useFilters, FilterProvider } from '@/context/FilterContext';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import Header from '@/components/layout/Header';
 import AnimatedInsightsTicker from '@/components/AnimatedInsightsTicker';
 import MovieSearch from '@/components/MovieSearch';
@@ -68,6 +68,28 @@ function DashboardContent() {
         }
     }, [summaryData, setSummary]);
 
+    // Derive filtered stats from already-fetched data so hero cards and ticker
+    // respond to all filter changes (genres, types, year range, country, etc.)
+    const filteredStats = useMemo((): SummaryData | null => {
+        if (!summaryData) return null;
+        if (!timelineData || timelineData.length === 0) return summaryData;
+
+        const totalMovies = timelineData.reduce((sum, d) => sum + d.movies, 0);
+        const totalTVShows = timelineData.reduce((sum, d) => sum + d.tvShows, 0);
+        const totalTitles = totalMovies + totalTVShows;
+        const totalCountries = countryData?.filter(c => c.count > 0).length || 0;
+        const years = timelineData.map(d => d.year);
+
+        return {
+            ...summaryData,
+            totalTitles,
+            totalMovies,
+            totalTVShows,
+            totalCountries,
+            yearRange: [Math.min(...years), Math.max(...years)],
+        };
+    }, [summaryData, timelineData, countryData]);
+
     return (
         <div className="min-h-screen relative">
             <Header />
@@ -117,7 +139,7 @@ function DashboardContent() {
 
                     {/* Animated Insights Ticker */}
                     <AnimatedInsightsTicker
-                        summary={summaryData}
+                        summary={filteredStats}
                         timeline={timelineData || []}
                         genres={genreData || []}
                         countries={countryData || []}
@@ -127,26 +149,26 @@ function DashboardContent() {
                     <MovieSearch />
 
                     {/* Quick Stats - Retro cards */}
-                    {summaryData && (
+                    {filteredStats && (
                         <div className="mt-12 grid grid-cols-2 md:grid-cols-4 gap-4 max-w-3xl mx-auto">
                             <div className="group relative bg-[#1a1a1a]/80 backdrop-blur-sm border border-[#2a2a2a] rounded-xl p-5 hover:border-[#404040] transition-all duration-300 overflow-hidden">
                                 <div className="absolute inset-0 bg-gradient-to-br from-[#c9a227]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                                <p className="text-3xl font-semibold text-[#f5f5f0] relative z-10">{summaryData.totalTitles.toLocaleString()}</p>
+                                <p className="text-3xl font-semibold text-[#f5f5f0] relative z-10">{filteredStats.totalTitles.toLocaleString()}</p>
                                 <p className="text-sm text-[#8a8a7a] mt-1 relative z-10">Total Titles</p>
                             </div>
                             <div className="group relative bg-[#1a1a1a]/80 backdrop-blur-sm border border-[#2a2a2a] rounded-xl p-5 hover:border-[#c9a227]/30 transition-all duration-300 overflow-hidden">
                                 <div className="absolute inset-0 bg-gradient-to-br from-[#c9a227]/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                                <p className="text-3xl font-semibold text-[#c9a227] relative z-10">{summaryData.totalMovies.toLocaleString()}</p>
+                                <p className="text-3xl font-semibold text-[#c9a227] relative z-10">{filteredStats.totalMovies.toLocaleString()}</p>
                                 <p className="text-sm text-[#8a8a7a] mt-1 relative z-10">Movies</p>
                             </div>
                             <div className="group relative bg-[#1a1a1a]/80 backdrop-blur-sm border border-[#2a2a2a] rounded-xl p-5 hover:border-[#e07b4c]/30 transition-all duration-300 overflow-hidden">
                                 <div className="absolute inset-0 bg-gradient-to-br from-[#e07b4c]/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                                <p className="text-3xl font-semibold text-[#e07b4c] relative z-10">{summaryData.totalTVShows.toLocaleString()}</p>
+                                <p className="text-3xl font-semibold text-[#e07b4c] relative z-10">{filteredStats.totalTVShows.toLocaleString()}</p>
                                 <p className="text-sm text-[#8a8a7a] mt-1 relative z-10">TV Shows</p>
                             </div>
                             <div className="group relative bg-[#1a1a1a]/80 backdrop-blur-sm border border-[#2a2a2a] rounded-xl p-5 hover:border-[#7db88f]/30 transition-all duration-300 overflow-hidden">
                                 <div className="absolute inset-0 bg-gradient-to-br from-[#7db88f]/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                                <p className="text-3xl font-semibold text-[#7db88f] relative z-10">{summaryData.totalCountries}</p>
+                                <p className="text-3xl font-semibold text-[#7db88f] relative z-10">{filteredStats.totalCountries}</p>
                                 <p className="text-sm text-[#8a8a7a] mt-1 relative z-10">Countries</p>
                             </div>
                         </div>
