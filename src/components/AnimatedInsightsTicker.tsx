@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
+import { useState, useEffect, useMemo, useRef, useCallback, type ReactNode } from 'react';
 import type { SummaryData, TimelineDataPoint, GenreStats, CountryData } from '@/types';
 
 interface AnimatedInsightsTickerProps {
@@ -11,12 +11,66 @@ interface AnimatedInsightsTickerProps {
 }
 
 interface Insight {
-    icon: string;
+    icon: ReactNode;
     label: string;
     value: string;
     color: string;
     borderColor: string;
 }
+
+const iconClass = "w-5 h-5 text-[#0f0f0f]";
+
+const icons = {
+    genre: (
+        <svg className={iconClass} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M4 20h16M4 20V4l8 4 8-4v16" />
+        </svg>
+    ),
+    trendUp: (
+        <svg className={iconClass} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+            <polyline points="22 7 13.5 15.5 8.5 10.5 2 17" />
+            <polyline points="16 7 22 7 22 13" />
+        </svg>
+    ),
+    globe: (
+        <svg className={iconClass} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+            <circle cx="12" cy="12" r="10" />
+            <path d="M2 12h20" />
+            <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+        </svg>
+    ),
+    clapperboard: (
+        <svg className={iconClass} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M20.2 6 3 11l-.9-2.4c-.3-1.1.3-2.2 1.3-2.5l13.5-4c1.1-.3 2.2.3 2.5 1.3Z" />
+            <path d="m6.2 5.3 3.1 3.9" />
+            <path d="m12.4 3.4 3.1 4" />
+            <path d="M3 11h18v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z" />
+        </svg>
+    ),
+    calendar: (
+        <svg className={iconClass} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+            <rect x="3" y="4" width="18" height="18" rx="2" />
+            <path d="M16 2v4" />
+            <path d="M8 2v4" />
+            <path d="M3 10h18" />
+        </svg>
+    ),
+    bolt: (
+        <svg className={iconClass} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z" />
+        </svg>
+    ),
+    languages: (
+        <svg className={iconClass} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+            <path d="m5 8 6 6" />
+            <path d="m4 14 6-6 2-3" />
+            <path d="M2 5h12" />
+            <path d="M7 2h1" />
+            <path d="m22 22-5-10-5 10" />
+            <path d="M14 18h6" />
+        </svg>
+    ),
+};
 
 export default function AnimatedInsightsTicker({
     summary,
@@ -28,16 +82,14 @@ export default function AnimatedInsightsTicker({
     const [progressKey, setProgressKey] = useState(0);
     const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
-    // Generate insights from the data - with retro color palette
     const insights = useMemo<Insight[]>(() => {
         const result: Insight[] = [];
 
         if (!summary) return result;
 
-        // Top genre
         if (genres.length > 0) {
             result.push({
-                icon: '🎭',
+                icon: icons.genre,
                 label: 'Top Genre',
                 value: genres[0].name,
                 color: 'from-[#c9a227] to-[#b8922a]',
@@ -45,13 +97,12 @@ export default function AnimatedInsightsTicker({
             });
         }
 
-        // Peak year
         if (timeline.length > 0) {
             const peakYear = timeline.reduce((max, item) =>
                 (item.movies + item.tvShows) > (max.movies + max.tvShows) ? item : max
             );
             result.push({
-                icon: '📈',
+                icon: icons.trendUp,
                 label: 'Peak Production Year',
                 value: `${peakYear.year} with ${(peakYear.movies + peakYear.tvShows).toLocaleString()} titles`,
                 color: 'from-[#e07b4c] to-[#d06a3c]',
@@ -59,10 +110,9 @@ export default function AnimatedInsightsTicker({
             });
         }
 
-        // Top producing country
         if (countries.length > 0) {
             result.push({
-                icon: '🌍',
+                icon: icons.globe,
                 label: 'Top Producer',
                 value: `${countries[0].country} (${countries[0].count.toLocaleString()} titles)`,
                 color: 'from-[#7db88f] to-[#6aa87f]',
@@ -70,11 +120,10 @@ export default function AnimatedInsightsTicker({
             });
         }
 
-        // Movie vs TV ratio
         if (summary.totalMovies && summary.totalTVShows) {
             const ratio = (summary.totalMovies / summary.totalTVShows).toFixed(1);
             result.push({
-                icon: '🎬',
+                icon: icons.clapperboard,
                 label: 'Movie to TV Ratio',
                 value: `${ratio}:1`,
                 color: 'from-[#d4786c] to-[#c4685c]',
@@ -82,11 +131,10 @@ export default function AnimatedInsightsTicker({
             });
         }
 
-        // Catalog span
         if (summary.yearRange) {
             const span = summary.yearRange[1] - summary.yearRange[0];
             result.push({
-                icon: '📅',
+                icon: icons.calendar,
                 label: 'Catalog Spans',
                 value: `${span} years (${summary.yearRange[0]} - ${summary.yearRange[1]})`,
                 color: 'from-[#9b8ec4] to-[#8b7eb4]',
@@ -94,7 +142,6 @@ export default function AnimatedInsightsTicker({
             });
         }
 
-        // Average titles per year (recent decade)
         if (timeline.length > 0) {
             const recentYears = timeline.filter(t => t.year >= 2010);
             if (recentYears.length > 0) {
@@ -102,7 +149,7 @@ export default function AnimatedInsightsTicker({
                     recentYears.reduce((sum, t) => sum + t.movies + t.tvShows, 0) / recentYears.length
                 );
                 result.push({
-                    icon: '⚡',
+                    icon: icons.bolt,
                     label: 'Avg Titles/Year (2010s+)',
                     value: avgPerYear.toLocaleString(),
                     color: 'from-[#5ba3c0] to-[#4b93b0]',
@@ -111,7 +158,6 @@ export default function AnimatedInsightsTicker({
             }
         }
 
-        // International content percentage
         if (genres.length > 0) {
             const internationalGenre = genres.find(g =>
                 g.name.toLowerCase().includes('international')
@@ -119,7 +165,7 @@ export default function AnimatedInsightsTicker({
             if (internationalGenre && summary.totalTitles) {
                 const percentage = Math.round((internationalGenre.count / summary.totalTitles) * 100);
                 result.push({
-                    icon: '🌐',
+                    icon: icons.languages,
                     label: 'International Content',
                     value: `${percentage}% of catalog`,
                     color: 'from-[#c4a484] to-[#b49474]',
@@ -131,12 +177,10 @@ export default function AnimatedInsightsTicker({
         return result;
     }, [summary, timeline, genres, countries]);
 
-    // Navigate to specific insight
     const goToInsight = useCallback((index: number) => {
         setCurrentIndex(index);
         setProgressKey(prev => prev + 1);
 
-        // Reset the auto-rotate timer
         if (intervalRef.current) {
             clearInterval(intervalRef.current);
         }
@@ -146,7 +190,6 @@ export default function AnimatedInsightsTicker({
         }, 5000);
     }, [insights.length]);
 
-    // Auto-rotate insights with smooth transitions
     useEffect(() => {
         if (insights.length <= 1) return;
 
@@ -171,15 +214,12 @@ export default function AnimatedInsightsTicker({
 
     return (
         <div className="relative w-full max-w-2xl mx-auto mb-10">
-            {/* Subtle glow effect */}
             <div
                 className={`absolute inset-0 bg-gradient-to-r ${currentInsight.color} opacity-10 blur-3xl rounded-full`}
                 style={{ transition: 'background 0.8s ease-in-out' }}
             />
 
-            {/* Main container - retro style */}
             <div className={`relative bg-[#1a1a1a]/90 backdrop-blur-xl border ${currentInsight.borderColor} rounded-xl p-1 overflow-hidden transition-all duration-500`}>
-                {/* Progress bar - using key to restart animation */}
                 <div className="absolute top-0 left-0 right-0 h-0.5 bg-[#252525] rounded-t-xl overflow-hidden">
                     <div
                         key={progressKey}
@@ -191,9 +231,7 @@ export default function AnimatedInsightsTicker({
                     />
                 </div>
 
-                {/* Content with crossfade effect */}
                 <div className="flex items-center justify-between p-4">
-                    {/* Insight carousel */}
                     <div className="flex-1 relative h-12 overflow-hidden">
                         {insights.map((insight, idx) => (
                             <div
@@ -206,14 +244,12 @@ export default function AnimatedInsightsTicker({
                                     pointerEvents: idx === safeIndex ? 'auto' : 'none',
                                 }}
                             >
-                                {/* Icon with gradient background */}
                                 <div
-                                    className={`flex-shrink-0 w-12 h-12 rounded-lg bg-gradient-to-br ${insight.color} flex items-center justify-center text-2xl shadow-lg`}
+                                    className={`flex-shrink-0 w-10 h-10 rounded-lg bg-gradient-to-br ${insight.color} flex items-center justify-center shadow-lg`}
                                 >
                                     {insight.icon}
                                 </div>
 
-                                {/* Text content */}
                                 <div className="flex-1 min-w-0">
                                     <p className="text-xs font-medium text-[#8a8a7a] uppercase tracking-wider">
                                         {insight.label}
@@ -226,7 +262,6 @@ export default function AnimatedInsightsTicker({
                         ))}
                     </div>
 
-                    {/* Navigation dots */}
                     <div className="flex items-center gap-2 ml-4">
                         {insights.map((insight, idx) => (
                             <button
@@ -243,7 +278,6 @@ export default function AnimatedInsightsTicker({
                 </div>
             </div>
 
-            {/* Keyboard hint */}
             <p className="text-center text-xs text-[#5a5a4a] mt-3">
                 Click dots to explore • Auto-rotates every 5s
             </p>
