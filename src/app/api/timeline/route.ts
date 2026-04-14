@@ -8,6 +8,9 @@ export async function GET(request: Request) {
         const { searchParams } = new URL(request.url);
         const genres = searchParams.get('genres')?.split(',').filter(Boolean) || [];
         const countries = searchParams.get('countries')?.split(',').filter(Boolean) || [];
+        const types = searchParams.get('types')?.split(',').filter(Boolean) || [];
+        const yearMin = parseInt(searchParams.get('yearMin') || '0') || undefined;
+        const yearMax = parseInt(searchParams.get('yearMax') || '9999') || undefined;
         const countryMode = searchParams.get('countryMode') || 'all';
 
         const expandedGenres = genres.flatMap(g => getOriginalGenres(g));
@@ -15,6 +18,15 @@ export async function GET(request: Request) {
         // Build where clause for filtering
         const whereClause: Record<string, unknown> = {};
 
+        if (yearMin) {
+            whereClause.releaseYear = { ...(whereClause.releaseYear as object), gte: yearMin };
+        }
+        if (yearMax) {
+            whereClause.releaseYear = { ...(whereClause.releaseYear as object), lte: yearMax };
+        }
+        if (types.length > 0) {
+            whereClause.type = { in: types };
+        }
         if (expandedGenres.length > 0) {
             whereClause.genres = {
                 some: {

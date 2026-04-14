@@ -41,8 +41,10 @@ export default function YearRangeSlider({ minYear, maxYear }: YearRangeSliderPro
         }
     };
 
-    const percentage = (value: number) =>
-        ((value - minYear) / (maxYear - minYear)) * 100;
+    const percentage = (value: number) => {
+        const range = maxYear - minYear;
+        return range === 0 ? 50 : ((value - minYear) / range) * 100;
+    };
 
     return (
         <div className="space-y-3">

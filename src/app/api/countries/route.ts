@@ -21,6 +21,7 @@ export async function GET(request: Request) {
     try {
         const { searchParams } = new URL(request.url);
         const genres = searchParams.get('genres')?.split(',').filter(Boolean) || [];
+        const types = searchParams.get('types')?.split(',').filter(Boolean) || [];
         const yearMin = parseInt(searchParams.get('yearMin') || '0') || undefined;
         const yearMax = parseInt(searchParams.get('yearMax') || '9999') || undefined;
         const countryMode = searchParams.get('countryMode') || 'all';
@@ -36,6 +37,9 @@ export async function GET(request: Request) {
         }
         if (yearMax) {
             titleFilter.releaseYear = { ...titleFilter.releaseYear, lte: yearMax };
+        }
+        if (types.length > 0) {
+            titleFilter.type = { in: types };
         }
         if (expandedGenres.length > 0) {
             titleFilter.genres = {
